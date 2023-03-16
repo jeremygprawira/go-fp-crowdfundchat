@@ -2,9 +2,10 @@ package main
 
 import (
 	"go-fp-crowdfundchat/database"
-	"go-fp-crowdfundchat/handler"
+	handler "go-fp-crowdfundchat/delivery/http"
+	"go-fp-crowdfundchat/repository"
 	"go-fp-crowdfundchat/router"
-	"go-fp-crowdfundchat/usecase/user"
+	"go-fp-crowdfundchat/usecase"
 	"log"
 )
 
@@ -14,9 +15,9 @@ func main() {
 		log.Fatalf("could not initialize database connection: %s", err)
 	}
 
-	userRepository := user.NewRepository(dbConnection)
-	userService := user.NewService(userRepository)
-
+	userRepository := repository.NewUserRepository(dbConnection)
+	userUsecase := usecase.NewService(userRepository)
+	userHandler := handler.NewUserHandler(userUsecase)
 	/*userInput := user.RegisterUserRequest{}
 	userInput.Name = "TEST-NEW-4"
 	userInput.PIN = "TEST-NEW-4"
@@ -24,7 +25,6 @@ func main() {
 
 	userService.PostRegisterUser(userInput)*/
 
-	userHandler := handler.NewUserHandler(userService)
 	router.InitRouter(userHandler)
 	router.Start()
 

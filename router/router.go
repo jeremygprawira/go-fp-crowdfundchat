@@ -1,7 +1,7 @@
 package router
 
 import (
-	"go-fp-crowdfundchat/handler"
+	handler "go-fp-crowdfundchat/delivery/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,5 +36,5 @@ func InitRouter(handler *handler.UserHandler) {
 }
 
 func Start() error {
-	return r.Run()
+	return r.Run(":8080")
 }
