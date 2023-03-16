@@ -18,3 +18,8 @@ type RegisterUserRequest struct {
 	PhoneNo 	string		`json:"phoneNo" binding:"required"`
 	PIN			string		`json:"pin" binding:"required"`
 }
+
+type LoginUserRequest struct {
+	PhoneNo		string		`json:"phoneNo" binding:"required"`
+	PIN			string		`json:"pin" binding:"required"`
+}
