@@ -76,3 +76,31 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 		"token": "noTokenExisted",
 	})
 }
+
+func (h *UserHandler) IsPhoneNoAvailable(c *gin.Context) {
+	var request model.PhoneNoBodyRequest
+
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42203",
+			"responseMessage": "Failed checking on phone number availability.",
+		})
+		return
+	}
+
+	verifyPhoneNumber, err := h.userUsecase.PostPhoneNoAvailability(&request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"responseCode": "50001",
+			"responseMessage": "Internal Server Error",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "Request has been successfully sent.",
+		"isPhoneNoAvailable": verifyPhoneNumber,
+	})
+}

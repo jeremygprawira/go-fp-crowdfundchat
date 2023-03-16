@@ -14,6 +14,7 @@ func InitRouter(handler *handler.UserHandler) {
 
 	api.POST("/user/register", handler.RegisterUser)
 	api.POST("/user/login", handler.LoginUser)
+	api.POST("/user/verify-phone", handler.IsPhoneNoAvailable)
 	/*r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST"},

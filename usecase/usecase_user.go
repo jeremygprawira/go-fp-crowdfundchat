@@ -10,6 +10,7 @@ import (
 type Usecase interface {
 	PostRegisterUser(request *model.RegisterUserRequest) (*model.User, error)
 	PostLoginUser(request *model.LoginUserRequest) (*model.User, error)
+	PostPhoneNoAvailability(request *model.PhoneNoBodyRequest) (bool, error)
 }
 
 type usecase struct {
@@ -50,7 +51,7 @@ func (u *usecase) PostLoginUser(request *model.LoginUserRequest) (*model.User, e
 	}
 
 	if user.ID == 0 {
-		return user, errors.New("no user found on that email")
+		return user, errors.New("no user found on that phone number")
 	}
 
 	err = util.CheckPINCredibility(pin, user.PIN)
@@ -61,41 +62,16 @@ func (u *usecase) PostLoginUser(request *model.LoginUserRequest) (*model.User, e
 	return user, nil
 }
 
-
-
-
-
-
-
-/*
-type Service interface {
-	PostRegisterUser (input RegisterUserRequest) (User, error)
-}
-
-type service struct {
-	repository Repository
-}
-
-func NewService(repository Repository) *service {
-	return &service{repository}
-}
-
-func (s *service) PostRegisterUser (request RegisterUserRequest) (User, error) {
-	user := User{}
-	user.Name = request.Name
-	user.PhoneNo = request.PhoneNo
-	// user.PIN = util.HashPassword(request.PIN, util.GenerateRandomSalt(util.SaltSize))
-	encrpytedPassword, err := util.HashSaltPassword(request.PIN)
+func (u *usecase) PostPhoneNoAvailability(request *model.PhoneNoBodyRequest) (bool, error) {
+	phoneNo := request.PhoneNo
+	user, err := u.repo.FindDataByPhoneNo(phoneNo)
 	if err != nil {
-		return user, err
-	}
-	user.PIN = string(encrpytedPassword)
-	user.Role = "user"
-
-	newUser, err := s.repository.RegisterToDB(user)
-	if err != nil {
-		return newUser, err
+		return false, err
 	}
 
-	return newUser, nil
-}*/
+	if user.ID == 0 {
+		return true, nil
+	}
+
+	return false, nil
+}

@@ -23,3 +23,7 @@ type LoginUserRequest struct {
 	PhoneNo		string		`json:"phoneNo" binding:"required"`
 	PIN			string		`json:"pin" binding:"required"`
 }
+
+type PhoneNoBodyRequest struct {
+	PhoneNo		string		`json:"phoneNo" binding:"required"`
+}
