@@ -1,4 +1,4 @@
-package user
+package model
 
 import "time"
 
@@ -11,4 +11,10 @@ type User struct {
 	Role 				string			`json:"role"`
 	CreatedAt 			time.Time		`json:"created_at"`
 	UpdatedAt 			time.Time		`json:"updated_at"`
+}
+
+type RegisterUserRequest struct {
+	Name		string		`json:"name" binding:"required"`
+	PhoneNo 	string		`json:"phoneNo" binding:"required"`
+	PIN			string		`json:"pin" binding:"required"`
 }
