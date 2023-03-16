@@ -47,41 +47,32 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 	})
 }
 
+func (h *UserHandler) LoginUser(c *gin.Context) {
+	var request model.LoginUserRequest
 
-
-
-
-
-/*
-type UserHandler struct {
-	userService user.Service
-}
-
-func NewUserHandler(userService user.Service) *UserHandler {
-	return &UserHandler{userService}
-}
-
-func (h *UserHandler) RegisterUser (c *gin.Context) {
-	var userRequest user.RegisterUserRequest
-	err := c.ShouldBindJSON(&userRequest)
+	err := c.ShouldBindJSON(&request)
 	if err != nil {
-
-		rawFailedMessage := util.FailedResponse(err) 
-		failedMessage := gin.H{"errors": rawFailedMessage}
-		userResponse := util.JSON(http.StatusBadRequest, "failed", "Account has not been registered", failedMessage)
-		c.JSON(http.StatusBadRequest, userResponse)
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42202",
+			"responseMessage": "The required field on the body request is empty or invalid.",
+		})
 		return
 	}
 
-	registeredUser, err := h.userService.PostRegisterUser(userRequest)
+	successLoginUser, err := h.userUsecase.PostLoginUser(&request)
 	if err != nil {
-		userResponse := util.JSON(http.StatusBadRequest, "failed", "Account has not been registered", nil)
-		c.JSON(http.StatusBadRequest, userResponse)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40002",
+			"responseMessage": err.Error(),
+		})
 		return
 	}
-	
-	rawResponse := user.UserResponse(registeredUser, "jwtToken")
-	userResponse := util.JSON(http.StatusOK, "success", "Account has been registered", rawResponse)
 
-	c.JSON(http.StatusOK, userResponse)
-}*/
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "User has been logged in successfully",
+		"name": successLoginUser.Name,
+		"phone_no": successLoginUser.PhoneNo,
+		"token": "noTokenExisted",
+	})
+}

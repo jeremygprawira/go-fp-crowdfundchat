@@ -17,6 +17,7 @@ func main() {
 
 	userRepository := repository.NewUserRepository(dbConnection)
 	userUsecase := usecase.NewService(userRepository)
+	
 	userHandler := handler.NewUserHandler(userUsecase)
 	/*userInput := user.RegisterUserRequest{}
 	userInput.Name = "TEST-NEW-4"

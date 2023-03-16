@@ -13,6 +13,7 @@ func InitRouter(handler *handler.UserHandler) {
 	api := r.Group("v1/api")
 
 	api.POST("/user/register", handler.RegisterUser)
+	api.POST("/user/login", handler.LoginUser)
 	/*r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST"},
