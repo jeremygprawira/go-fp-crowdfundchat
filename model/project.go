@@ -14,6 +14,8 @@ type Project struct {
 	CurrentAmount			int				`json:"current_amount"`
 	CreatedAt 				time.Time		`json:"created_at"`
 	UpdatedAt 				time.Time		`json:"updated_at"`
+
+	ProjectImages			[]ProjectImage	`json:"project_images"`
 }
 
 type ProjectImage struct {

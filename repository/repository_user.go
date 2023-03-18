@@ -64,7 +64,7 @@ func (r *userRepository) UpdateDataToDB(user *model.User) (*model.User, error) {
 
 func (r *userRepository) FindAllProject() ([]*model.Project, error) {
 	var projects []*model.Project
-	err := r.db.Find(&projects).Error
+	err := r.db.Preload("ProjectImages", "project_images.is_primary = 1").Find(&projects).Error
 	if err != nil {
 		return projects, err
 	}
@@ -75,7 +75,7 @@ func (r *userRepository) FindAllProject() ([]*model.Project, error) {
 func (r *userRepository) FindProjectByUserID(userID int) ([]*model.Project, error) {
 	var projects []*model.Project
 	
-	err := r.db.Where("user_id = ?", userID).Find(&projects).Error
+	err := r.db.Where("user_id = ?", userID).Preload("ProjectImages", "project_images.is_primary = 1").Find(&projects).Error
 	if err != nil {
 		return projects, err
 	}
