@@ -17,7 +17,6 @@ type authUsecase struct {
 }
 
 var AuthSecretKey = []byte(os.Getenv("SECRET_KEY"))
-// var AuthSecretKey = "goG0_fpFP_cR0WDfUnd1N6"
 
 
 func NewAuthUsecase() *authUsecase {
