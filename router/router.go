@@ -2,6 +2,7 @@ package router
 
 import (
 	handler "go-fp-crowdfundchat/delivery/http"
+	"go-fp-crowdfundchat/delivery/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,9 +15,14 @@ func InitRouter(handler *handler.UserHandler) {
 
 	api.POST("/user/register", handler.RegisterUser)
 	api.POST("/user/login", handler.LoginUser)
-	api.POST("/user/verify-phone", handler.IsPhoneNoAvailable)
+	
+	apiAuth := r.Group("v1/api")
+	//api.POST("/user/verify-phone", handler.IsPhoneNoAvailable)
 	api.POST("/user/pin-validation", handler.PinValidation)
-	api.POST("/user/upload-image", handler.UploadImage)
+	apiAuth.Use(middleware.AuthMiddleWare())
+	apiAuth.POST("/user/verify-phone", handler.IsPhoneNoAvailable)
+	apiAuth.POST("/user/upload-image", handler.UploadImage)
+
 	/*r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST"},

@@ -17,10 +17,8 @@ func main() {
 	
 	userRepository := repository.NewUserRepository(dbConnection)
 	userUsecase := usecase.NewUserUsecase(userRepository)
-	
-	authUsecase := usecase.NewAuthUsecase()
 
-	userHandler := handler.NewUserHandler(userUsecase, authUsecase)
+	userHandler := handler.NewUserHandler(userUsecase)
 
 	router.InitRouter(userHandler)
 	router.Start()
