@@ -10,11 +10,10 @@ import (
 
 type UserHandler struct {
 	userUsecase usecase.UserUsecase
-	authUsecase usecase.AuthUsecase
 }
 
-func NewUserHandler (userUsecase usecase.UserUsecase, authUsecase usecase.AuthUsecase) *UserHandler {
-	return &UserHandler{userUsecase, authUsecase}
+func NewUserHandler (userUsecase usecase.UserUsecase) *UserHandler {
+	return &UserHandler{userUsecase}
 }
 
 func (h *UserHandler) RegisterUser(c *gin.Context) {
@@ -38,7 +37,7 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	authToken, err := h.authUsecase.GenerateToken(user.ID)
+	authToken, err := usecase.NewAuthUsecase().GenerateToken(user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"responseCode": "50002",
@@ -78,7 +77,7 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 		return
 	}
 
-	authToken, err := h.authUsecase.GenerateToken(successLoginUser.ID)
+	authToken, err := usecase.NewAuthUsecase().GenerateToken(successLoginUser.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"responseCode": "50003",
@@ -93,6 +92,37 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 		"name": successLoginUser.Name,
 		"phone_no": successLoginUser.PhoneNo,
 		"token": authToken,
+	})
+}
+
+func (h *UserHandler) VerifyUser(c *gin.Context) {
+	//userID, err := usecase.GetTokenID(c)
+	userID, err := usecase.NewAuthUsecase().GetTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40007",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	user, err := h.userUsecase.GetUserByID(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40008",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "User has been registered successfully",
+		"name": user.Name,
+		"phoneNumber": user.PhoneNo,
+		"id": user.ID,
+		"role": user.Role,
+		"imageFile": user.AvatarFileName,
 	})
 }
 
@@ -173,7 +203,8 @@ func (h *UserHandler) UploadImage(c *gin.Context) {
 	}
 
 	// JWT
-	userID := 1
+	currentUserID := c.MustGet("currentUserID")
+	userID := currentUserID.(int)
 
 	_, err = h.userUsecase.PostUploadImage(userID, path)
 	if err != nil {
@@ -187,6 +218,6 @@ func (h *UserHandler) UploadImage(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
 		"responseMessage": "Request has been successfully sent.",
-		"isPhoneNoAvailable": true,
+		"isImageUploaded": true,
 	})
 }

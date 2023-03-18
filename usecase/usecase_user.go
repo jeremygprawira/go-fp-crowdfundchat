@@ -12,7 +12,8 @@ type UserUsecase interface {
 	PostLoginUser(request *model.LoginUserRequest) (*model.User, error)
 	PostPhoneNoAvailability(request *model.PhoneNoBodyRequest) (bool, error)
 	PostPinValidation(request *model.PinValidationRequest) (bool, error)
-	PostUploadImage(userID int, fileLocation string) (*model.User, error) 
+	PostUploadImage(userID int, fileLocation string) (*model.User, error)
+ 	GetUserByID(userID int) (*model.User, error)
 }
 
 type userUsecase struct {
@@ -101,4 +102,17 @@ func (u *userUsecase) PostUploadImage(userID int, fileLocation string) (*model.U
 	}
 
 	return uploadedPhoto, nil
+}
+
+func (u *userUsecase) GetUserByID(userID int) (*model.User, error) {
+	user, err := u.repo.FindUserByID(userID)
+	if err != nil {
+		return user, err
+	}
+
+	if user.ID == 0 {
+		return user, errors.New("userID is not found")
+	}
+
+	return user, nil
 }
