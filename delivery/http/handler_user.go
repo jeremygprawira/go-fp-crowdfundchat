@@ -95,6 +95,7 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 	})
 }
 
+// need to create the endpoint later
 func (h *UserHandler) VerifyUser(c *gin.Context) {
 	//userID, err := usecase.GetTokenID(c)
 	userID, err := usecase.NewAuthUsecase().GetTokenID(c)
@@ -117,7 +118,7 @@ func (h *UserHandler) VerifyUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
-		"responseMessage": "User has been registered successfully",
+		"responseMessage": "User info retrieved successfully",
 		"name": user.Name,
 		"phoneNumber": user.PhoneNo,
 		"id": user.ID,

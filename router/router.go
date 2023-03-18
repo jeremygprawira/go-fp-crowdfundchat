@@ -9,20 +9,22 @@ import (
 
 var r *gin.Engine
 
-func InitRouter(handler *handler.UserHandler) {
+func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler) {
 	r = gin.Default()
+	r.Static("/images", "./mock/images")
 	api := r.Group("v1/api")
 
-	api.POST("/user/register", handler.RegisterUser)
-	api.POST("/user/login", handler.LoginUser)
+	api.POST("/user/register", u.RegisterUser)
+	api.POST("/user/login", u.LoginUser)
 	
 	apiAuth := r.Group("v1/api")
-	//api.POST("/user/verify-phone", handler.IsPhoneNoAvailable)
-	api.POST("/user/pin-validation", handler.PinValidation)
+	api.POST("/user/pin-validation", u.PinValidation)
 	apiAuth.Use(middleware.AuthMiddleWare())
-	apiAuth.POST("/user/verify-phone", handler.IsPhoneNoAvailable)
-	apiAuth.POST("/user/upload-image", handler.UploadImage)
+	apiAuth.POST("/user/verify-phone", u.IsPhoneNoAvailable)
+	apiAuth.POST("/user/upload-image", u.UploadImage)
+	apiAuth.GET("/user/verify-user", u.VerifyUser)
 
+	apiAuth.GET("/project/project-list", p.ProjectList)
 	/*r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST"},
