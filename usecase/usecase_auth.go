@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"os"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -8,6 +9,7 @@ import (
 
 type AuthUsecase interface {
 	GenerateToken(userID int) (string, error)
+	ValidateToken(encodedToken string) (*jwt.Token, error)
 }
 
 type authUsecase struct {
@@ -34,4 +36,22 @@ func (s *authUsecase) GenerateToken(userID int) (string, error) {
 	}
 
 	return signedToken, nil
+}
+
+func (s *authUsecase) ValidateToken(encodedToken string) (*jwt.Token, error) {
+	parsedToken, err := jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+	
+		if !ok {
+			return nil, errors.New("Invalid token")
+		}
+
+		return []byte(AuthSecretKey), nil
+	})
+
+	if err != nil {
+		return parsedToken, err
+	}
+
+	return parsedToken, nil
 }
