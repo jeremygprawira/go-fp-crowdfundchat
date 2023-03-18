@@ -12,7 +12,7 @@ type UserUsecase interface {
 	PostLoginUser(request *model.LoginUserRequest) (*model.User, error)
 	PostPhoneNoAvailability(request *model.PhoneNoBodyRequest) (bool, error)
 	PostPinValidation(request *model.PinValidationRequest) (bool, error)
-	PostUploadImage(userID int, fileLocation string) (*model.User, error)
+	PostUploadImage(userID int, fileLocation string) (*model.User, error) 
 }
 
 type userUsecase struct {
