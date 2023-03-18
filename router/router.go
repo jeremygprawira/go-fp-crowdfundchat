@@ -11,6 +11,7 @@ var r *gin.Engine
 
 func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler) {
 	r = gin.Default()
+	r.Static("/images", "./mock/images")
 	api := r.Group("v1/api")
 
 	api.POST("/user/register", u.RegisterUser)

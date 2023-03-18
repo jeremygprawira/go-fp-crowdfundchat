@@ -30,7 +30,7 @@ func (h *ProjectHandler) ProjectList(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
-		"responseMessage": "Project",
+		"responseMessage": "Project list has been successfully retrieved.",
 		"data": projects,
 	})
 }

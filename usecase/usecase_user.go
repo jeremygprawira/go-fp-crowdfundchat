@@ -17,10 +17,10 @@ type UserUsecase interface {
 }
 
 type userUsecase struct {
-	repo repository.UserRepository
+	repo repository.BaseRepository
 }
 
-func NewUserUsecase(repo repository.UserRepository) *userUsecase {
+func NewUserUsecase(repo repository.BaseRepository) *userUsecase {
 	return &userUsecase{repo}
 }
 
