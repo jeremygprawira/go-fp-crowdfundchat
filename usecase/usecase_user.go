@@ -11,6 +11,8 @@ type Usecase interface {
 	PostRegisterUser(request *model.RegisterUserRequest) (*model.User, error)
 	PostLoginUser(request *model.LoginUserRequest) (*model.User, error)
 	PostPhoneNoAvailability(request *model.PhoneNoBodyRequest) (bool, error)
+	PostPinValidation(request *model.PinValidationRequest) (bool, error)
+	PostUploadImage(userID int, fileLocation string) (*model.User, error)
 }
 
 type usecase struct {
@@ -74,4 +76,29 @@ func (u *usecase) PostPhoneNoAvailability(request *model.PhoneNoBodyRequest) (bo
 	}
 
 	return false, nil
+}
+
+func (u *usecase) PostPinValidation(request *model.PinValidationRequest) (bool, error) {
+	pin := request.PIN
+	_, err := util.RepeatingPINChecker(pin)
+	if err != nil {
+		return false, errors.New("PIN cannot be 111111")
+	}
+
+	return true, nil
+}
+
+func (u *usecase) PostUploadImage(userID int, fileLocation string) (*model.User, error) {
+	user, err := u.repo.FindUserByID(userID)
+	if err != nil {
+		return user, errors.New("cannot find the user ID")
+	}
+
+	user.AvatarFileName = fileLocation
+	uploadedPhoto, err := u.repo.UpdateDataToDB(user)
+	if err != nil {
+		return uploadedPhoto, errors.New("failed to upload the photo to database")
+	}
+
+	return uploadedPhoto, nil
 }

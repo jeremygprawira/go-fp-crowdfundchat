@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
 	ID 					int
@@ -26,4 +28,8 @@ type LoginUserRequest struct {
 
 type PhoneNoBodyRequest struct {
 	PhoneNo		string		`json:"phoneNo" binding:"required"`
+}
+
+type PinValidationRequest struct {
+	PIN			string		`json:"pin" binding:"required"`
 }

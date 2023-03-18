@@ -104,3 +104,70 @@ func (h *UserHandler) IsPhoneNoAvailable(c *gin.Context) {
 		"isPhoneNoAvailable": verifyPhoneNumber,
 	})
 }
+
+func (h *UserHandler) PinValidation(c *gin.Context) {
+	var request model.PinValidationRequest
+	
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42204",
+			"responseMessage": "Failed checking on phone number availability.",
+		})
+		return
+	}
+
+	validatedPin, err := h.userUsecase.PostPinValidation(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40003",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "Request has been successfully sent.",
+		"isPhoneNoAvailable": validatedPin,
+	})
+}
+
+func (h *UserHandler) UploadImage(c *gin.Context) {
+	file, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40004",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	path := "mock/images/" + file.Filename
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40005",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	// JWT
+	userID := 1
+
+	_, err = h.userUsecase.PostUploadImage(userID, path)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40006",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "Request has been successfully sent.",
+		"isPhoneNoAvailable": true,
+	})
+}
