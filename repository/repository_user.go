@@ -11,6 +11,9 @@ type UserRepository interface {
 	FindDataByPhoneNo(phoneNo string) (*model.User, error)
 	FindUserByID(Id int) (*model.User, error)
 	UpdateDataToDB(user *model.User) (*model.User, error)
+
+	FindAllProject() ([]*model.Project, error)
+	FindProjectByUserID(userID int) ([]*model.Project, error)
 }
 
 type userRepository struct {
@@ -57,4 +60,25 @@ func (r *userRepository) UpdateDataToDB(user *model.User) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func (r *userRepository) FindAllProject() ([]*model.Project, error) {
+	var projects []*model.Project
+	err := r.db.Find(&projects).Error
+	if err != nil {
+		return projects, err
+	}
+
+	return projects, nil
+}
+
+func (r *userRepository) FindProjectByUserID(userID int) ([]*model.Project, error) {
+	var projects []*model.Project
+	
+	err := r.db.Where("user_id = ?", userID).Find(&projects).Error
+	if err != nil {
+		return projects, err
+	}
+
+	return projects, nil
 }
