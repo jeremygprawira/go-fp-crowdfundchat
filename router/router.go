@@ -22,7 +22,7 @@ func InitRouter(handler *handler.UserHandler) {
 	apiAuth.Use(middleware.AuthMiddleWare())
 	apiAuth.POST("/user/verify-phone", handler.IsPhoneNoAvailable)
 	apiAuth.POST("/user/upload-image", handler.UploadImage)
-
+	apiAuth.GET("/user/verify-user", handler.VerifyUser)
 	/*r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST"},

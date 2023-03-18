@@ -95,6 +95,7 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 	})
 }
 
+// need to create the endpoint later
 func (h *UserHandler) VerifyUser(c *gin.Context) {
 	//userID, err := usecase.GetTokenID(c)
 	userID, err := usecase.NewAuthUsecase().GetTokenID(c)
