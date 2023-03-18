@@ -9,11 +9,12 @@ import (
 )
 
 type UserHandler struct {
-	userUsecase usecase.Usecase
+	userUsecase usecase.UserUsecase
+	authUsecase usecase.AuthUsecase
 }
 
-func NewUserHandler (userUsecase usecase.Usecase) *UserHandler {
-	return &UserHandler{userUsecase}
+func NewUserHandler (userUsecase usecase.UserUsecase, authUsecase usecase.AuthUsecase) *UserHandler {
+	return &UserHandler{userUsecase, authUsecase}
 }
 
 func (h *UserHandler) RegisterUser(c *gin.Context) {
@@ -37,13 +38,22 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 		return
 	}
 
+	authToken, err := h.authUsecase.GenerateToken(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"responseCode": "50002",
+			"responseMessage": "Internal Server Error",
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
 		"responseMessage": "User has been registered successfully",
 		"name": user.Name,
 		"phone_no": user.PhoneNo,
 		"pin": user.PIN,
-		"token": "noTokenExisted",
+		"token": authToken,
 	})
 }
 
@@ -68,12 +78,21 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 		return
 	}
 
+	authToken, err := h.authUsecase.GenerateToken(successLoginUser.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"responseCode": "50003",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
 		"responseMessage": "User has been logged in successfully",
 		"name": successLoginUser.Name,
 		"phone_no": successLoginUser.PhoneNo,
-		"token": "noTokenExisted",
+		"token": authToken,
 	})
 }
 

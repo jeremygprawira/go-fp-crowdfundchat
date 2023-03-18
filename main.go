@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"go-fp-crowdfundchat/database"
 	handler "go-fp-crowdfundchat/delivery/http"
 	"go-fp-crowdfundchat/repository"
 	"go-fp-crowdfundchat/router"
 	"go-fp-crowdfundchat/usecase"
-	"go-fp-crowdfundchat/util"
 	"log"
 )
 
@@ -18,23 +16,11 @@ func main() {
 	}
 	
 	userRepository := repository.NewUserRepository(dbConnection)
-	userUsecase := usecase.NewService(userRepository)
+	userUsecase := usecase.NewUserUsecase(userRepository)
 	
-	a := "222232"
-	b, err := util.RepeatingPINChecker(a)
-	if err != nil {
-		fmt.Println("nt")
-		return
-	}
-	fmt.Println(b)
+	authUsecase := usecase.NewAuthUsecase()
 
-	userHandler := handler.NewUserHandler(userUsecase)
-	/*userInput := user.RegisterUserRequest{}
-	userInput.Name = "TEST-NEW-4"
-	userInput.PIN = "TEST-NEW-4"
-	userInput.PhoneNo = "TEST-NEW-4"
-
-	userService.PostRegisterUser(userInput)*/
+	userHandler := handler.NewUserHandler(userUsecase, authUsecase)
 
 	router.InitRouter(userHandler)
 	router.Start()
