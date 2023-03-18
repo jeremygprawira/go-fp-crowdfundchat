@@ -5,8 +5,8 @@ import (
 	"go-fp-crowdfundchat/repository"
 )
 
-type ProjectService interface{
-	PostProjectList(userID int) ([]*model.Project, error)
+type ProjectUsecase interface{
+	GetProjectList(userID int) ([]*model.Project, error)
 }
 
 type projectUsecase struct {
@@ -17,7 +17,7 @@ func NewProjectUsecase(repo repository.UserRepository) *projectUsecase {
 	return &projectUsecase{repo}
 }
 
-func (u *projectUsecase) PostProjectList(userID int) ([]*model.Project, error) {
+func (u *projectUsecase) GetProjectList(userID int) ([]*model.Project, error) {
 	if userID != 0 {
 		projects, err := u.repo.FindProjectByUserID(userID)
 		if err != nil {

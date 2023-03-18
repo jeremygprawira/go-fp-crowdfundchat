@@ -118,7 +118,7 @@ func (h *UserHandler) VerifyUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
-		"responseMessage": "User has been registered successfully",
+		"responseMessage": "User info retrieved successfully",
 		"name": user.Name,
 		"phoneNumber": user.PhoneNo,
 		"id": user.ID,
