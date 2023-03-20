@@ -13,16 +13,16 @@ func AuthMiddleWare() gin.HandlerFunc {
 		receivedToken, err := usecase.NewAuthUsecase().ValidateToken(token)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"responseCode": "40107",
+				"responseCode": "40101",
 				"responseMessage": "Unauthorized",
 			})
 			return
 		}
-		
-		userID, err := usecase.NewAuthUsecase().GetTokenID(receivedToken)
+
+		userID, err := usecase.NewAuthUsecase().GetUserIDByToken(receivedToken)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"responseCode": "40109",
+				"responseCode": "40102",
 				"responseMessage": "Unauthorized",
 			})
 			return

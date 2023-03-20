@@ -13,7 +13,8 @@ type AuthUsecase interface {
 	GenerateToken(userID int) (string, error)
 	ValidateToken(token string) (*jwt.Token, error)
 	GetToken(c *gin.Context) string
-	GetTokenID(c *gin.Context) (int, error)
+	//GetTokenID(c *gin.Context) (int, error)
+	GetUserIDByToken(parsedToken *jwt.Token) (int, error)
 }
 
 type authUsecase struct {
@@ -78,7 +79,7 @@ func (u *authUsecase) GetToken(c *gin.Context) string {
 	return ""
 }
 
-func (u *authUsecase) GetTokenID(parsedToken *jwt.Token) (int, error) {
+func (u *authUsecase) GetUserIDByToken(parsedToken *jwt.Token) (int, error) {
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 
