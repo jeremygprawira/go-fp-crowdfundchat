@@ -7,6 +7,7 @@ import (
 
 type ProjectUsecase interface{
 	GetProjectList(userID int) ([]*model.ProjectListResponse, error)
+	GetProjectDetail(request *model.ProjectDetailRequest) ([]*model.ProjectDetailResponse, error)
 }
 
 type projectUsecase struct {
@@ -33,4 +34,13 @@ func (u *projectUsecase) GetProjectList(userID int) ([]*model.ProjectListRespons
 	}
 
 	return projects, nil
+}
+
+func (u *projectUsecase) GetProjectDetail(request *model.ProjectDetailRequest) ([]*model.ProjectDetailResponse, error) {
+	project, err := u.repo.FindProjectByProjectID(request.ID)
+	if err != nil {
+		return project, err
+	}
+
+	return project, nil
 }

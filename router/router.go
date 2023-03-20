@@ -25,6 +25,7 @@ func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler) {
 	apiAuth.GET("/user/verify-user", u.VerifyUser)
 
 	apiAuth.GET("/project/project-list", p.ProjectList)
+	apiAuth.GET("/project/project-detail/:id", p.ProjectDetail)
 	/*r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST"},
