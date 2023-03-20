@@ -15,6 +15,7 @@ type BaseRepository interface {
 	FindAllProject() ([]*model.ProjectListResponse, error)
 	FindProjectByUserID(userID int) ([]*model.ProjectListResponse, error)
 	FindProjectByProjectID(ID int) ([]*model.ProjectDetailResponse, error)
+	CreateProjectToDB(project *model.Project) (*model.Project, error)
 }
 
 type baseRepository struct {
@@ -97,4 +98,13 @@ func (r *baseRepository) FindProjectByProjectID(ID int) ([]*model.ProjectDetailR
 	}
 
 	return projectResponse, nil
+}
+
+func (r *baseRepository) CreateProjectToDB(project *model.Project) (*model.Project, error) {
+	err := r.db.Save(&project).Error
+	if err != nil {
+		return project, err
+	}
+
+	return project, nil
 }
