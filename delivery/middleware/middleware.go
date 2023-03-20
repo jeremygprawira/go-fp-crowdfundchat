@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func AuthMiddleWare() gin.HandlerFunc {
@@ -19,14 +18,19 @@ func AuthMiddleWare() gin.HandlerFunc {
 			})
 			return
 		}
-		_, ok := receivedToken.Claims.(jwt.MapClaims)
-		if !ok {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"responseCode": "40108",
-			"responseMessage": "Unauthorized",
-		})
+		
+		userID, err := usecase.NewAuthUsecase().GetTokenID(receivedToken)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"responseCode": "40109",
+				"responseMessage": "Unauthorized",
+			})
+			return
+		}
+
+		c.Set("currentUser", userID)
+		c.Next()
 		return
 	}
 
-	}
 }

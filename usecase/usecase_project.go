@@ -58,7 +58,7 @@ func (u *projectUsecase) PostCreateProject(request *model.CreateProjectRequest) 
 	project.GoalAmount = request.GoalAmount
 	project.UserID = request.User.ID
 	
-	projectSlugIdentifier := fmt.Sprint("%s %d", request.ProjectTitle, request.User.ID)
+	projectSlugIdentifier := fmt.Sprintf("%s %d", request.ProjectTitle, request.User.ID)
 	project.Slug = slug.Make(projectSlugIdentifier)
 
 	newProject, err := u.repo.CreateProjectToDB(&project)

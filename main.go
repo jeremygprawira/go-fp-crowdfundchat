@@ -21,7 +21,7 @@ func main() {
 
 	projectRepository := repository.NewBaseRepository(dbConnection)
 	projectUsecase := usecase.NewProjectUsecase(projectRepository)
-	projectHandler := handler.NewProjectHandler(projectUsecase)
+	projectHandler := handler.NewProjectHandler(projectUsecase, userUsecase)
 
 	router.InitRouter(userHandler, projectHandler)
 	router.Start()

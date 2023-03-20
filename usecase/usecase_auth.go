@@ -2,9 +2,7 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -80,25 +78,13 @@ func (u *authUsecase) GetToken(c *gin.Context) string {
 	return ""
 }
 
-func (u *authUsecase) GetTokenID(c *gin.Context) (int, error) {
+func (u *authUsecase) GetTokenID(parsedToken *jwt.Token) (int, error) {
 
-	tokenString := u.GetToken(c)
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(os.Getenv("API_SECRET")), nil
-	})
-	if err != nil {
-		return 0, err
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+
+	if !ok && !parsedToken.Valid {
+		return 0, errors.New("Invalid token")
 	}
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if ok && token.Valid {
-		uid, err := strconv.ParseUint(fmt.Sprintf("%.0f", claims["user_id"]), 10, 32)
-		if err != nil {
-			return 0, err
-		}
-		return int(uid), nil
-	}
-	return 0, nil
+
+	return int(claims["user_id"].(float64)), nil
 }
