@@ -1,6 +1,7 @@
 package http
 
 import (
+	"go-fp-crowdfundchat/model"
 	"go-fp-crowdfundchat/usecase"
 	"net/http"
 	"strconv"
@@ -32,5 +33,33 @@ func (h *ProjectHandler) ProjectList(c *gin.Context) {
 		"responseCode": "20000",
 		"responseMessage": "Project list has been successfully retrieved.",
 		"data": projects,
+	})
+}
+
+func (h *ProjectHandler) ProjectDetail(c *gin.Context) {
+	var request *model.ProjectDetailRequest
+
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40010",
+			"responseMessage": "Failed to get project detail",
+		})
+		return
+	}
+
+	project, err := h.projectUsecase.GetProjectDetail(request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40011",
+			"responseMessage": "Failed to get project detail",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "Project detail has been successfully retrieved.",
+		"data": &project,
 	})
 }
