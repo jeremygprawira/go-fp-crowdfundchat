@@ -95,38 +95,6 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 	})
 }
 
-// need to create the endpoint later
-func (h *UserHandler) VerifyUser(c *gin.Context) {
-	//userID, err := usecase.GetTokenID(c)
-	userID, err := usecase.NewAuthUsecase().GetTokenID(c)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"responseCode": "40007",
-			"responseMessage": err.Error(),
-		})
-		return
-	}
-
-	user, err := h.userUsecase.GetUserByID(userID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"responseCode": "40008",
-			"responseMessage": err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"responseCode": "20000",
-		"responseMessage": "User info retrieved successfully",
-		"name": user.Name,
-		"phoneNumber": user.PhoneNo,
-		"id": user.ID,
-		"role": user.Role,
-		"imageFile": user.AvatarFileName,
-	})
-}
-
 func (h *UserHandler) IsPhoneNoAvailable(c *gin.Context) {
 	var request model.PhoneNoBodyRequest
 
@@ -179,7 +147,7 @@ func (h *UserHandler) PinValidation(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
 		"responseMessage": "Request has been successfully sent.",
-		"isPhoneNoAvailable": validatedPin,
+		"isPINAvailable": validatedPin,
 	})
 }
 
@@ -204,8 +172,7 @@ func (h *UserHandler) UploadImage(c *gin.Context) {
 	}
 
 	// JWT
-	currentUserID := c.MustGet("currentUserID")
-	userID := currentUserID.(int)
+	userID := c.GetInt("currentUser")
 
 	_, err = h.userUsecase.PostUploadImage(userID, path)
 	if err != nil {

@@ -11,10 +11,11 @@ import (
 
 type ProjectHandler struct {
 	projectUsecase	usecase.ProjectUsecase
+	userUsecase usecase.UserUsecase
 }
 
-func NewProjectHandler(projectUsecase usecase.ProjectUsecase) *ProjectHandler {
-	return &ProjectHandler{projectUsecase}
+func NewProjectHandler(projectUsecase usecase.ProjectUsecase, userUsecase usecase.UserUsecase) *ProjectHandler {
+	return &ProjectHandler{projectUsecase, userUsecase}
 }
 
 func (h *ProjectHandler) ProjectList(c *gin.Context) {
@@ -61,5 +62,52 @@ func (h *ProjectHandler) ProjectDetail(c *gin.Context) {
 		"responseCode": "20000",
 		"responseMessage": "Project detail has been successfully retrieved.",
 		"data": &project,
+	})
+}
+
+func (h *ProjectHandler) CreateProject(c *gin.Context) {
+	var projectRequest model.CreateProjectRequest
+
+	err := c.ShouldBindJSON(&projectRequest)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42205",
+			"responseMessage": "The required field on the body request is empty or invalid.",
+		})
+		return
+	}
+
+	userID := c.GetInt("currentUser")
+	user, err := h.userUsecase.GetUserByID(userID)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42206",
+			"responseMessage": "The required field on the body request is empty or invalid.",
+		})
+		return
+	}
+
+	projectRequest.User = *user
+
+	project, err := h.projectUsecase.PostCreateProject(&projectRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40012",
+			"responseMessage": "Usecase PostCreateProject is not working properly",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "Project has been created successfully",
+		"project_id": project.ID,
+		"user_id": project.UserID,
+		"project_title": project.ProjectTitle,
+		"short_description": project.ShortDescription,
+		"slug": project.Slug,
+		"current_amount": project.CurrentAmount,
+		"goal_amount": project.GoalAmount,
+		"image_url": project.ProjectImages,
 	})
 }

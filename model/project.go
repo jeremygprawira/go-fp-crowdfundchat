@@ -78,3 +78,12 @@ type ProjectDetailResponse struct {
 	User					[]User 
 	ProjectImages			[]ProjectImages	`json:"project_images" gorm:"foreignKey:ProjectID"`
 }*/
+
+type CreateProjectRequest struct {
+	ProjectTitle 			string 			`json:"project_title" binding:"required"`
+	ShortDescription 		string			`json:"short_description" binding:"required"`
+	LongDescription			string			`json:"long_description" binding:"required"`
+	GoalAmount 				int				`json:"goal_amount" binding:"required"`
+	Perks 					string			`json:"perks" binding:"required"`
+	User					User
+}
