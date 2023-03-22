@@ -10,8 +10,9 @@ import (
 
 type ProjectUsecase interface{
 	GetProjectList(userID int) ([]*model.ProjectListResponse, error)
-	GetProjectDetail(request *model.ProjectDetailRequest) ([]*model.ProjectDetailResponse, error)
+	GetProjectDetail(request *model.ProjectDetailRequest) (*model.Project, error)
 	PostCreateProject(request *model.CreateProjectRequest) (*model.Project, error)
+	PutUpdateProject(requestID *model.UpdateProjectRequest, requestData *model.CreateProjectRequest) (*model.Project, error)
 }
 
 type projectUsecase struct {
@@ -40,7 +41,7 @@ func (u *projectUsecase) GetProjectList(userID int) ([]*model.ProjectListRespons
 	return projects, nil
 }
 
-func (u *projectUsecase) GetProjectDetail(request *model.ProjectDetailRequest) ([]*model.ProjectDetailResponse, error) {
+func (u *projectUsecase) GetProjectDetail(request *model.ProjectDetailRequest) (*model.Project, error) {
 	project, err := u.repo.FindProjectByProjectID(request.ID)
 	if err != nil {
 		return project, err
@@ -67,4 +68,28 @@ func (u *projectUsecase) PostCreateProject(request *model.CreateProjectRequest) 
 	}
 
 	return newProject, nil
+}
+
+func (u *projectUsecase) PutUpdateProject(requestID *model.UpdateProjectRequest, requestData *model.CreateProjectRequest) (*model.Project, error) {
+	request, err := u.repo.FindProjectByProjectID(requestID.ID)
+	if err != nil {
+		return request, nil
+	}
+
+	if request.UserID != requestData.User.ID {
+		return request, fmt.Errorf("%d, is not the owner of this campaign", request.UserID)
+	}
+
+	request.ProjectTitle = requestData.ProjectTitle
+	request.ShortDescription = requestData.ShortDescription
+	request.LongDescription = requestData.LongDescription
+	request.Perks = requestData.Perks
+	request.GoalAmount = requestData.GoalAmount
+
+	requestedUpdate, err := u.repo.UpdateProjectToDB(request)
+	if err != nil {
+		return requestedUpdate, err
+	}
+
+	return requestedUpdate, nil
 }

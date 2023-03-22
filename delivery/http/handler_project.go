@@ -111,3 +111,60 @@ func (h *ProjectHandler) CreateProject(c *gin.Context) {
 		"image_url": project.ProjectImages,
 	})
 }
+
+func (h *ProjectHandler) UpdateProject(c *gin.Context) {
+	var request *model.UpdateProjectRequest
+
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40012",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	var requestData *model.CreateProjectRequest
+	err = c.ShouldBindJSON(&requestData)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42205",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	userID := c.GetInt("currentUser")
+	user, err := h.userUsecase.GetUserByID(userID)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42206",
+			"responseMessage": "The required field on the body request is empty or invalid.",
+		})
+		return
+	}
+
+	requestData.User = *user 
+
+	updatedCampaign, err := h.projectUsecase.PutUpdateProject(request, requestData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40013",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "Project has been created successfully",
+		"project_id": updatedCampaign.ID,
+		"user_id": updatedCampaign.UserID,
+		"project_title": updatedCampaign.ProjectTitle,
+		"short_description": updatedCampaign.ShortDescription,
+		"slug": updatedCampaign.Slug,
+		"current_amount": updatedCampaign.CurrentAmount,
+		"goal_amount": updatedCampaign.GoalAmount,
+		"image_url": updatedCampaign.ProjectImages,
+	})
+}
