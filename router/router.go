@@ -16,10 +16,11 @@ func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler) {
 
 	api.POST("/user/register", u.RegisterUser)
 	api.POST("/user/login", u.LoginUser)
+	api.POST("/user/pin-validation", u.PinValidation)
 	
 	apiAuth := r.Group("v1/api")
-	api.POST("/user/pin-validation", u.PinValidation)
 	apiAuth.Use(middleware.AuthMiddleWare())
+
 	apiAuth.POST("/user/verify-phone", u.IsPhoneNoAvailable)
 	apiAuth.POST("/user/upload-image", u.UploadImage)
 	//apiAuth.GET("/user/verify-user", u.VerifyUser)
@@ -28,7 +29,7 @@ func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler) {
 	apiAuth.GET("/project/project-detail/:id", p.ProjectDetail)
 	apiAuth.POST("/project/create-project", p.CreateProject)
 	apiAuth.PUT("/project/update-project/:id", p.UpdateProject)
-	apiAuth.PUT("/project/create-project/:id", p.CreateProject)
+	apiAuth.POST("/project/upload-project-image", p.UploadProjectImage)
 	/*r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST"},
