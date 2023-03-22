@@ -18,6 +18,8 @@ type BaseRepository interface {
 	FindProjectByProjectID(ID int) (*model.Project, error)
 	CreateProjectToDB(project *model.Project) (*model.Project, error)
 	UpdateProjectToDB(project *model.Project) (*model.Project, error)
+	UploadImageToDB(projectImage *model.ProjectImages) (*model.ProjectImages, error)
+	SetImageToNonPrimary(projectID int) (bool, error)
 }
 
 type baseRepository struct {
@@ -89,22 +91,8 @@ func (r *baseRepository) FindProjectByUserID(userID int) ([]*model.ProjectListRe
 	return projectResponse, nil
 }
 
-
-/*func (r *baseRepository) FindProjectByProjectID(ID int) ([]*model.ProjectDetailResponse, error) {
-	var projects []*model.Project
-	var projectResponse []*model.ProjectDetailResponse
-	//err := r.db.Table("projects").Where("user_id = ?", userID).Preload("ProjectImages", "project_images.is_primary = 1").Find(&projects).Error
-	err := r.db.Model(&projects).Where("id =?", ID).Preload("User").Preload("ProjectImages").Find(&projectResponse).Error
-	if err != nil {
-		return projectResponse, err
-	}
-
-	return projectResponse, nil
-}*/
-
 func (r *baseRepository) FindProjectByProjectID(ID int) (*model.Project, error) {
 	var projects *model.Project
-	//err := r.db.Table("projects").Where("user_id = ?", userID).Preload("ProjectImages", "project_images.is_primary = 1").Find(&projects).Error
 	err := r.db.Model(&projects).Where("id =?", ID).Preload("User").Preload("ProjectImages").Find(&projects).Error
 	if err != nil {
 		return projects, err
@@ -129,4 +117,22 @@ func (r *baseRepository) UpdateProjectToDB(project *model.Project) (*model.Proje
 	}
 
 	return project, nil
+}
+
+func (r *baseRepository) UploadImageToDB(projectImage *model.ProjectImages) (*model.ProjectImages, error) {
+	err := r.db.Save(&projectImage).Error
+	if err != nil {
+		return projectImage, err
+	}
+
+	return projectImage, nil
+}
+
+func (r *baseRepository) SetImageToNonPrimary(projectID int) (bool, error) {
+	var projectImage *model.ProjectImages
+	err := r.db.Model(&projectImage).Where("project_id = ?", projectID).Update("is_primary", 0).Error
+	if err != nil {
+		return false, err
+	}
+	return true, err
 }
