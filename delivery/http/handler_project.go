@@ -118,8 +118,8 @@ func (h *ProjectHandler) UpdateProject(c *gin.Context) {
 	err := c.ShouldBindUri(&request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"responseCode": "40012",
-			"responseMessage": err.Error(),
+			"responseCode": "40013",
+			"responseMessage": "ID is not found",
 		})
 		return
 	}
@@ -128,8 +128,8 @@ func (h *ProjectHandler) UpdateProject(c *gin.Context) {
 	err = c.ShouldBindJSON(&requestData)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"responseCode": "42205",
-			"responseMessage": err.Error(),
+			"responseCode": "42207",
+			"responseMessage": "Failed to update project",
 		})
 		return
 	}
@@ -138,8 +138,8 @@ func (h *ProjectHandler) UpdateProject(c *gin.Context) {
 	user, err := h.userUsecase.GetUserByID(userID)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"responseCode": "42206",
-			"responseMessage": "The required field on the body request is empty or invalid.",
+			"responseCode": "42208",
+			"responseMessage": "Could not get the User ID",
 		})
 		return
 	}
@@ -149,8 +149,8 @@ func (h *ProjectHandler) UpdateProject(c *gin.Context) {
 	updatedCampaign, err := h.projectUsecase.PutUpdateProject(request, requestData)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"responseCode": "40013",
-			"responseMessage": err.Error(),
+			"responseCode": "40014",
+			"responseMessage": "Failed to update project",
 		})
 		return
 	}
