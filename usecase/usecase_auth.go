@@ -54,7 +54,7 @@ func (u *authUsecase) ValidateToken(encodedToken string) (*jwt.Token, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 	
 		if !ok {
-			return nil, errors.New("Invalid token")
+			return nil, errors.New("invalid token")
 		}
 
 		return []byte([]byte(os.Getenv("SECRET_KEY"))), nil
@@ -84,7 +84,7 @@ func (u *authUsecase) GetUserIDByToken(parsedToken *jwt.Token) (int, error) {
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 
 	if !ok && !parsedToken.Valid {
-		return 0, errors.New("Invalid token")
+		return 0, errors.New("invalid token")
 	}
 
 	return int(claims["user_id"].(float64)), nil

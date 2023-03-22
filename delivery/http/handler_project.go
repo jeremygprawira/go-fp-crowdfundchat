@@ -111,3 +111,60 @@ func (h *ProjectHandler) CreateProject(c *gin.Context) {
 		"image_url": project.ProjectImages,
 	})
 }
+
+func (h *ProjectHandler) UpdateProject(c *gin.Context) {
+	var request *model.UpdateProjectRequest
+
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40013",
+			"responseMessage": "ID is not found",
+		})
+		return
+	}
+
+	var requestData *model.CreateProjectRequest
+	err = c.ShouldBindJSON(&requestData)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42207",
+			"responseMessage": "Failed to update project",
+		})
+		return
+	}
+
+	userID := c.GetInt("currentUser")
+	user, err := h.userUsecase.GetUserByID(userID)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42208",
+			"responseMessage": "Could not get the User ID",
+		})
+		return
+	}
+
+	requestData.User = *user 
+
+	updatedCampaign, err := h.projectUsecase.PutUpdateProject(request, requestData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40014",
+			"responseMessage": "Failed to update project",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "Project has been created successfully",
+		"project_id": updatedCampaign.ID,
+		"user_id": updatedCampaign.UserID,
+		"project_title": updatedCampaign.ProjectTitle,
+		"short_description": updatedCampaign.ShortDescription,
+		"slug": updatedCampaign.Slug,
+		"current_amount": updatedCampaign.CurrentAmount,
+		"goal_amount": updatedCampaign.GoalAmount,
+		"image_url": updatedCampaign.ProjectImages,
+	})
+}
