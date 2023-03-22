@@ -76,3 +76,9 @@ type CreateProjectRequest struct {
 type UpdateProjectRequest struct {
 	ID						int				`uri:"id" binding:"required"`
 }
+
+type UploadProjectImageRequest struct {
+	ProjectID				int				`form:"project_id" binding:"required"`
+	IsPrimary				bool			`form:"is_primary"`
+	User					User			`json:"user" gorm:"foreignKey:ID"`
+}

@@ -13,6 +13,7 @@ type ProjectUsecase interface{
 	GetProjectDetail(request *model.ProjectDetailRequest) (*model.Project, error)
 	PostCreateProject(request *model.CreateProjectRequest) (*model.Project, error)
 	PutUpdateProject(requestID *model.UpdateProjectRequest, requestData *model.CreateProjectRequest) (*model.Project, error)
+	PostUploadProjectImage(request *model.UploadProjectImageRequest, fileLocation string) (*model.ProjectImages, error)
 }
 
 type projectUsecase struct {
@@ -77,7 +78,7 @@ func (u *projectUsecase) PutUpdateProject(requestID *model.UpdateProjectRequest,
 	}
 
 	if request.UserID != requestData.User.ID {
-		return request, fmt.Errorf("%d, is not the owner of this campaign", request.UserID)
+		return request, fmt.Errorf("this user ID: %d - is not the owner of this campaign", request.UserID)
 	}
 
 	request.ProjectTitle = requestData.ProjectTitle
@@ -92,4 +93,36 @@ func (u *projectUsecase) PutUpdateProject(requestID *model.UpdateProjectRequest,
 	}
 
 	return requestedUpdate, nil
+}
+
+func (u *projectUsecase) PostUploadProjectImage(request *model.UploadProjectImageRequest, fileLocation string) (*model.ProjectImages, error) {
+	project, err := u.repo.FindProjectByProjectID(request.ProjectID)
+	if err != nil {
+		return &model.ProjectImages{}, err
+	}
+
+	if project.UserID != request.User.ID {
+		return &model.ProjectImages{}, fmt.Errorf("this user ID: %d - is not the owner of this campaign", request.User.ID)
+	}
+
+	isPrimary := 0
+	if request.IsPrimary {
+		isPrimary = 1
+		_, err := u.repo.SetImageToNonPrimary(request.ProjectID)
+		if err != nil {
+			return &model.ProjectImages{}, err
+		}
+	}
+
+	projectImage := model.ProjectImages{}
+	projectImage.ProjectID = request.ProjectID
+	projectImage.IsPrimary = isPrimary
+	projectImage.FileName = fileLocation
+
+	newProjectImage, err := u.repo.UploadImageToDB(&projectImage)
+	if err != nil {
+		return newProjectImage, err
+	}
+
+	return newProjectImage, nil
 }

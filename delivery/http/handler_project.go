@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"go-fp-crowdfundchat/model"
 	"go-fp-crowdfundchat/usecase"
 	"net/http"
@@ -166,5 +167,56 @@ func (h *ProjectHandler) UpdateProject(c *gin.Context) {
 		"current_amount": updatedCampaign.CurrentAmount,
 		"goal_amount": updatedCampaign.GoalAmount,
 		"image_url": updatedCampaign.ProjectImages,
+	})
+}
+
+func (h *ProjectHandler) UploadProjectImage (c *gin.Context) {
+	var request model.UploadProjectImageRequest
+	
+	err := c.ShouldBind(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40015",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40016",
+			"responseMessage": "Failed to upload image to your project",
+			"is_uploaded": false,
+		})
+		return
+	}
+
+	userID := c.GetInt("currentUser")
+
+	path := fmt.Sprintf("mock/images/%d-%s", userID, file.Filename)
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "400017",
+			"responseMessage": "Failed to upload image to your project",
+		})
+		return
+	}
+	
+	_, err = h.projectUsecase.PostUploadProjectImage(&request, path)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40018",
+			"responseMessage": "Failed to upload image to your project",
+			"is_uploaded": false,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "Request has been successfully sent.",
+		"isImageUploaded": true,
 	})
 }
