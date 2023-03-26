@@ -15,15 +15,20 @@ func main() {
 		log.Fatalf("could not initialize database connection: %s", err)
 	}
 	
-	userRepository := repository.NewBaseRepository(dbConnection)
-	userUsecase := usecase.NewUserUsecase(userRepository)
+	baseRepository := repository.NewBaseRepository(dbConnection)
+	
+	//userRepository := repository.NewBaseRepository(dbConnection)
+	userUsecase := usecase.NewUserUsecase(baseRepository)
 	userHandler := handler.NewUserHandler(userUsecase)
 
-	projectRepository := repository.NewBaseRepository(dbConnection)
-	projectUsecase := usecase.NewProjectUsecase(projectRepository)
+	//projectRepository := repository.NewBaseRepository(dbConnection)
+	projectUsecase := usecase.NewProjectUsecase(baseRepository)
 	projectHandler := handler.NewProjectHandler(projectUsecase, userUsecase)
 
-	router.InitRouter(userHandler, projectHandler)
+	transactionUsecase := usecase.NewTransactionUsecase(baseRepository)
+	transactionHandler := handler.NewTransactionHandler(transactionUsecase)
+
+	router.InitRouter(userHandler, projectHandler, transactionHandler)
 	router.Start()
 
 }

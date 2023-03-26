@@ -12,14 +12,16 @@ type BaseRepository interface {
 	FindUserByID(Id int) (*model.User, error)
 	UpdateDataToDB(user *model.User) (*model.User, error)
 
-	FindAllProject() ([]*model.ProjectListResponse, error)
-	FindProjectByUserID(userID int) ([]*model.ProjectListResponse, error)
+	FindAllProject() ([]*model.Project, error)
+	FindProjectByUserID(userID int) ([]*model.Project, error)
 	//FindProjectByProjectID(ID int) ([]*model.ProjectDetailResponse, error)
 	FindProjectByProjectID(ID int) (*model.Project, error)
 	CreateProjectToDB(project *model.Project) (*model.Project, error)
 	UpdateProjectToDB(project *model.Project) (*model.Project, error)
 	UploadImageToDB(projectImage *model.ProjectImages) (*model.ProjectImages, error)
 	SetImageToNonPrimary(projectID int) (bool, error)
+
+	FindTransactionByProjectID(projectID int) ([]*model.Transaction, error)
 }
 
 type baseRepository struct {
@@ -68,27 +70,27 @@ func (r *baseRepository) UpdateDataToDB(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-func (r *baseRepository) FindAllProject() ([]*model.ProjectListResponse, error) {
+func (r *baseRepository) FindAllProject() ([]*model.Project, error) {
 	var projects []*model.Project
-	var projectResponse []*model.ProjectListResponse
+	//var projectResponse []*model.ProjectListResponse
 	//err := r.db.Table("projects").Preload("ProjectImages", "project_images.is_primary = 1").Find(&projects).Error
-	err := r.db.Model(&projects).Preload("ProjectImages", "project_images.is_primary = 1").Find(&projectResponse).Error
+	err := r.db.Model(&projects).Preload("ProjectImages", "project_images.is_primary = 1").Find(&projects).Error
 	if err != nil {
-		return projectResponse, err
+		return projects, err
 	}
 
-	return projectResponse, nil
+	return projects, nil
 }
 
-func (r *baseRepository) FindProjectByUserID(userID int) ([]*model.ProjectListResponse, error) {
+func (r *baseRepository) FindProjectByUserID(userID int) ([]*model.Project, error) {
 	var projects []*model.Project
-	var projectResponse []*model.ProjectListResponse
-	err := r.db.Model(&projects).Table("projects").Where("user_id = ?", userID).Preload("ProjectImages", "project_images.is_primary = 1").Find(&projectResponse).Error
+	//var projectResponse []*model.ProjectListResponse
+	err := r.db.Model(&projects).Table("projects").Where("user_id = ?", userID).Preload("ProjectImages", "project_images.is_primary = 1").Find(&projects).Error
 	if err != nil {
-		return projectResponse, err
+		return projects, err
 	}
 
-	return projectResponse, nil
+	return projects, nil
 }
 
 func (r *baseRepository) FindProjectByProjectID(ID int) (*model.Project, error) {
@@ -134,5 +136,14 @@ func (r *baseRepository) SetImageToNonPrimary(projectID int) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return true, err
+	return true, nil
+}
+
+func (r *baseRepository) FindTransactionByProjectID(projectID int) ([]*model.Transaction, error) {
+	var transaction []*model.Transaction
+	err := r.db.Model(&transaction).Preload("User").Where("project_id = ?", projectID).Find(&transaction).Error
+	if err != nil {
+		return transaction, err
+	}
+	return transaction, nil
 }

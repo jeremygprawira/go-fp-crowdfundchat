@@ -9,7 +9,7 @@ import (
 )
 
 type ProjectUsecase interface{
-	GetProjectList(userID int) ([]*model.ProjectListResponse, error)
+	GetProjectList(userID int) ([]*model.Project, error)
 	GetProjectDetail(request *model.ProjectDetailRequest) (*model.Project, error)
 	PostCreateProject(request *model.CreateProjectRequest) (*model.Project, error)
 	PutUpdateProject(requestID *model.UpdateProjectRequest, requestData *model.CreateProjectRequest) (*model.Project, error)
@@ -24,7 +24,7 @@ func NewProjectUsecase(repo repository.BaseRepository) *projectUsecase {
 	return &projectUsecase{repo}
 }
 
-func (u *projectUsecase) GetProjectList(userID int) ([]*model.ProjectListResponse, error) {
+func (u *projectUsecase) GetProjectList(userID int) ([]*model.Project, error) {
 	if userID != 0 {
 		projects, err := u.repo.FindProjectByUserID(userID)
 		if err != nil {
