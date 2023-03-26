@@ -16,6 +16,7 @@ type Transaction struct {
 
 type ProjectTransactionListRequest struct {
 	ID						int				`uri:"id" binding:"required"`
+	User					User
 }
 
 type ProjectTransactionListResponse struct {

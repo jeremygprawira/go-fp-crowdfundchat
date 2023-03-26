@@ -141,7 +141,7 @@ func (r *baseRepository) SetImageToNonPrimary(projectID int) (bool, error) {
 
 func (r *baseRepository) FindTransactionByProjectID(projectID int) ([]*model.Transaction, error) {
 	var transaction []*model.Transaction
-	err := r.db.Model(&transaction).Preload("User").Where("project_id = ?", projectID).Find(&transaction).Error
+	err := r.db.Model(&transaction).Preload("User").Where("project_id = ?", projectID).Order("id desc").Find(&transaction).Error
 	if err != nil {
 		return transaction, err
 	}
