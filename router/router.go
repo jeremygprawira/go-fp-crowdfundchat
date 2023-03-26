@@ -9,7 +9,7 @@ import (
 
 var r *gin.Engine
 
-func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler) {
+func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler, t *handler.TransactionHandler) {
 	r = gin.Default()
 	r.Static("/images", "./mock/images")
 	api := r.Group("v1/api")
@@ -30,6 +30,8 @@ func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler) {
 	apiAuth.POST("/project/create-project", p.CreateProject)
 	apiAuth.PUT("/project/update-project/:id", p.UpdateProject)
 	apiAuth.POST("/project/upload-project-image", p.UploadProjectImage)
+
+	apiAuth.GET("/project/:id/transaction", t.ProjectTransactionList)
 	/*r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST"},

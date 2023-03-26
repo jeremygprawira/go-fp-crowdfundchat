@@ -30,11 +30,36 @@ func (h *ProjectHandler) ProjectList(c *gin.Context) {
 		})
 		return
 	}
+	projectList := make([]*model.ProjectListResponse, len(projects))
+	for i, p := range projects {
+		
+		if len(p.ProjectImages) > 0 {
+			projectList[i] = &model.ProjectListResponse{
+				ID: p.ID,
+				ProjectTitle: p.ProjectTitle,
+				UserID: p.UserID,
+				ShortDescription: p.ShortDescription,
+				ImageURL: p.ProjectImages[0].FileName,
+				GoalAmount: p.GoalAmount,
+				CurrentAmount: p.CurrentAmount,
+			}
+		} else if len(p.ProjectImages) == 0 {
+			projectList[i] = &model.ProjectListResponse{
+				ID: p.ID,
+				ProjectTitle: p.ProjectTitle,
+				UserID: p.UserID,
+				ShortDescription: p.ShortDescription,
+				ImageURL: "",
+				GoalAmount: p.GoalAmount,
+				CurrentAmount: p.CurrentAmount,
+			}
+		}
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
 		"responseMessage": "Project list has been successfully retrieved.",
-		"data": projects,
+		"data": projectList,
 	})
 }
 

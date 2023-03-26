@@ -40,8 +40,9 @@ type ProjectListResponse struct {
 	ContributorCount 		int				`json:"contributor_count"`
 	GoalAmount 				int				`json:"goal_amount"`
 	CurrentAmount			int				`json:"current_amount"`
+	ImageURL				string			`json:"image_url"`
 	
-	ProjectImages			[]ProjectImages	`json:"project_images" gorm:"foreignKey:ProjectID"`
+	//ProjectImages			[]ProjectImages	`json:"project_images" gorm:"foreignKey:ProjectID"`
 }
 
 type ProjectDetailRequest struct {
