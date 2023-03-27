@@ -22,6 +22,7 @@ type BaseRepository interface {
 	SetImageToNonPrimary(projectID int) (bool, error)
 
 	FindTransactionByProjectID(projectID int) ([]*model.Transaction, error)
+	FindTransactionByUserID(userID int) ([]*model.Transaction, error)
 }
 
 type baseRepository struct {
@@ -145,5 +146,15 @@ func (r *baseRepository) FindTransactionByProjectID(projectID int) ([]*model.Tra
 	if err != nil {
 		return transaction, err
 	}
+	return transaction, nil
+}
+
+func (r *baseRepository) FindTransactionByUserID(userID int) ([]*model.Transaction, error) {
+	var transaction []*model.Transaction
+	err := r.db.Preload("Project.ProjectImages", "project_images.is_primary = 1").Where("user_id =?", userID).Find(&transaction).Error
+	if err != nil {
+		return transaction, err
+	}
+	
 	return transaction, nil
 }

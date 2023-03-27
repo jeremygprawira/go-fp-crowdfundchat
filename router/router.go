@@ -32,6 +32,7 @@ func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler, t *handler.Tr
 	apiAuth.POST("/project/upload-project-image", p.UploadProjectImage)
 
 	apiAuth.GET("/project/:id/transaction", t.ProjectTransactionList)
+	apiAuth.GET("/user/transaction", t.UserTransactionList)
 	/*r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST"},
