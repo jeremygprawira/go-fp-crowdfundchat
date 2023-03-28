@@ -26,7 +26,7 @@ func main() {
 	projectHandler := handler.NewProjectHandler(projectUsecase, userUsecase)
 
 	transactionUsecase := usecase.NewTransactionUsecase(baseRepository)
-	transactionHandler := handler.NewTransactionHandler(transactionUsecase)
+	transactionHandler := handler.NewTransactionHandler(transactionUsecase, userUsecase)
 
 	router.InitRouter(userHandler, projectHandler, transactionHandler)
 	router.Start()

@@ -39,3 +39,9 @@ type ProjectImagesTransactionListResponse struct {
 	Name					string			`json:"name"`
 	ImageURL				string			`json:"image_url"`
 }
+
+type OrderTransactionRequest struct {
+	ProjectID				int											`json:"project_id" binding:"required"`
+	Amount					int											`json:"amount" binding:"required"`
+	User					User										`gorm:"foreignKey:UserID"`
+}

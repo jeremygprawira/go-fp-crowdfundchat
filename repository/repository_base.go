@@ -23,6 +23,7 @@ type BaseRepository interface {
 
 	FindTransactionByProjectID(projectID int) ([]*model.Transaction, error)
 	FindTransactionByUserID(userID int) ([]*model.Transaction, error)
+	CreateTransactionToDB(transaction *model.Transaction) (*model.Transaction, error)
 }
 
 type baseRepository struct {
@@ -156,5 +157,14 @@ func (r *baseRepository) FindTransactionByUserID(userID int) ([]*model.Transacti
 		return transaction, err
 	}
 	
+	return transaction, nil
+}
+
+func (r *baseRepository) CreateTransactionToDB(transaction *model.Transaction) (*model.Transaction, error) {
+	err := r.db.Create(&transaction).Error
+	if err != nil {
+		return transaction, err
+	}
+
 	return transaction, nil
 }

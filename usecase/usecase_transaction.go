@@ -9,6 +9,7 @@ import (
 type TransactionUsecase interface{
 	GetTransactionByProjectID(request *model.ProjectTransactionListRequest) ([]*model.Transaction, error)
 	GetTransactionByUserID(userID int) ([]*model.Transaction, error)
+	PostOrderTransaction(request *model.OrderTransactionRequest) (*model.Transaction, error)
 }
 
 type transactionUsecase struct {
@@ -44,4 +45,20 @@ func (u *transactionUsecase) GetTransactionByUserID(userID int) ([]*model.Transa
 	}
 
 	return transaction, nil
+}
+
+func (u *transactionUsecase) PostOrderTransaction(request *model.OrderTransactionRequest) (*model.Transaction, error) {
+	transaction := model.Transaction{}
+	transaction.ProjectID = request.ProjectID
+	transaction.Amount = request.Amount
+	transaction.UserID = request.User.ID
+	transaction.Status = "PENDING"
+	transaction.Code = ""
+
+	orderedTransaction, err := u.repo.CreateTransactionToDB(&transaction)
+	if err != nil {
+		return orderedTransaction, err
+	}
+
+	return orderedTransaction, nil
 }

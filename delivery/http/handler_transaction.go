@@ -9,11 +9,12 @@ import (
 )
 
 type TransactionHandler struct {
-	transactionUsecase	usecase.TransactionUsecase	
+	transactionUsecase	usecase.TransactionUsecase
+	userUsecase usecase.UserUsecase	
 }
 
-func NewTransactionHandler (transactionUsecase usecase.TransactionUsecase) *TransactionHandler {
-	return &TransactionHandler{transactionUsecase}
+func NewTransactionHandler (transactionUsecase usecase.TransactionUsecase, userUsecase usecase.UserUsecase) *TransactionHandler {
+	return &TransactionHandler{transactionUsecase, userUsecase}
 }
 
 func (h *TransactionHandler) ProjectTransactionList(c *gin.Context) {
@@ -96,5 +97,45 @@ func (h *TransactionHandler) UserTransactionList(c *gin.Context) {
 		"responseCode": "20000",
 		"responseMessage": "Request has been successfully sent.",
 		"transactions": userTransactionList,
+	})
+}
+
+func (h *TransactionHandler) OrderTransaction(c *gin.Context) {
+	var request model.OrderTransactionRequest
+
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42209",
+			"responseMessage": "The required field on the body request is empty or invalid.",
+		})
+		return
+	}
+
+	userID := c.GetInt("currentUser")
+	user, err := h.userUsecase.GetUserByID(userID)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42210",
+			"responseMessage": "The required field on the body request is empty or invalid.",
+		})
+		return
+	}
+
+	request.User = *user
+
+	transaction, err := h.transactionUsecase.PostOrderTransaction(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40022",
+			"responseMessage": "Usecase PostOrderTransaction is not working properly",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "Request has been successfully sent.",
+		"transaction": transaction,
 	})
 }
