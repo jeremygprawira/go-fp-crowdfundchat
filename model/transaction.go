@@ -8,7 +8,8 @@ type Transaction struct {
 	UserID					int											`json:"user_id"`
 	Amount					int											`json:"amount"`
 	Status					string										`json:"status"`
-	Code					string										`json:"code"`
+	ReceiptNo				string										`json:"receipt_no"`
+	TransactionURL			string										`json:"transaction_url"`
 	CreatedAt 				time.Time									`json:"created_at"`
 	UpdatedAt 				time.Time									`json:"updated_at"`
 	User					User										`gorm:"foreignKey:UserID"`

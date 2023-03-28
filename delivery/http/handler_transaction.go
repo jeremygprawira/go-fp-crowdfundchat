@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"go-fp-crowdfundchat/model"
 	"go-fp-crowdfundchat/usecase"
 	"net/http"
@@ -128,7 +129,7 @@ func (h *TransactionHandler) OrderTransaction(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"responseCode": "40022",
-			"responseMessage": "Usecase PostOrderTransaction is not working properly",
+			"responseMessage": fmt.Sprintf("Usecase PostOrderTransaction is not working properly: %s", err.Error()),
 		})
 		return
 	}
@@ -136,6 +137,12 @@ func (h *TransactionHandler) OrderTransaction(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
 		"responseMessage": "Request has been successfully sent.",
-		"transaction": transaction,
+		"transaction_id": transaction.ID,
+		"project_id": transaction.ProjectID,
+		"user_id": transaction.UserID,
+		"amount": transaction.Amount,
+		"status": transaction.Status,
+		"receipt_no": transaction.ReceiptNo,
+		"transaction_url": transaction.TransactionURL,
 	})
 }
