@@ -9,27 +9,27 @@ import (
 )
 
 func GetTransactionURL(transaction *model.Transaction, user *model.User) (string, error) {
-	midtrans.ServerKey = ""
-	midtrans.Environment = midtrans.Sandbox
-	var s snap.Client
+    midtrans.ServerKey = ""
+    midtrans.Environment = midtrans.Sandbox
+    var s snap.Client
 
-	s.New(midtrans.ServerKey, midtrans.Sandbox)
+    s.New(midtrans.ServerKey, midtrans.Sandbox)
 
-	req := & snap.Request{
-		TransactionDetails: midtrans.TransactionDetails{
-		  OrderID:  strconv.Itoa(transaction.ID),
-		  GrossAmt: int64(transaction.Amount),
-		},
-		CustomerDetail: &midtrans.CustomerDetails{
-		  FName: user.Name,
-		  Phone: user.PhoneNo,
-		},
-	  }
-	
-	snapResp, err := s.CreateTransaction(req)
-	if err != nil {
-		return "", err
-	}
+    req := & snap.Request{
+        TransactionDetails: midtrans.TransactionDetails{
+          OrderID:  strconv.Itoa(transaction.ID),
+          GrossAmt: int64(transaction.Amount),
+        },
+        CustomerDetail: &midtrans.CustomerDetails{
+          FName: user.Name,
+          Phone: user.PhoneNo,
+        },
+      }
+    
+    snapResp, err := s.CreateTransaction(req)
+    if err != nil {
+        return "", err
+    }
 
-	return snapResp.RedirectURL, nil
+    return snapResp.RedirectURL, nil
 }
