@@ -4,7 +4,6 @@ import (
 	"errors"
 	"go-fp-crowdfundchat/model"
 	"go-fp-crowdfundchat/repository"
-	"go-fp-crowdfundchat/util"
 )
 
 type TransactionUsecase interface{
@@ -54,21 +53,9 @@ func (u *transactionUsecase) PostOrderTransaction(request *model.OrderTransactio
 	transaction.Amount = request.Amount
 	transaction.UserID = request.User.ID
 	transaction.Status = "PENDING"
-	transaction.ReceiptNo = ""
+	transaction.Code = ""
 
 	orderedTransaction, err := u.repo.CreateTransactionToDB(&transaction)
-	if err != nil {
-		return orderedTransaction, err
-	}
-
-	transactionURL, err := util.GetTransactionURL(orderedTransaction, &request.User)
-	if err != nil {
-		return orderedTransaction, err
-	}
-
-	orderedTransaction.TransactionURL = transactionURL
-	
-	orderedTransaction, err = u.repo.UpdateTransactionToDB(orderedTransaction)
 	if err != nil {
 		return orderedTransaction, err
 	}
