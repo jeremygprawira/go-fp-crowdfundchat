@@ -100,30 +100,7 @@ func (h *ProjectHandler) ProjectDetail(c *gin.Context) {
 		} else if len(project.ProjectImages) == 0 {
 			projectImagesList = &model.ProjectImagesProjectDetailResponse{}
 		}
-		
-		/*if len(p.Project.ProjectImages) > 0 {
-            projectImagesList = &model.ProjectImagesTransactionListResponse{
-                Name: p.Project.ProjectTitle,
-                ImageURL: p.Project.ProjectImages[0].FileName,
-            }
-        } else if len(p.Project.ProjectImages) == 0 {
-            projectImagesList = &model.ProjectImagesTransactionListResponse{
-                Name: p.Project.ProjectTitle,
-                ImageURL: "",
-            }
-        }*/
     }
-    /*for _, p := range project {
-        if len(p) > 0 {
-            projectImagesList = &model.ProjectImagesProjectDetailResponse{
-                Name: p,
-                ImageURL: p.FileName,
-            }
-        } else if len(p.Project.ProjectImages) == 0 {
-            projectImagesList = &model.ProjectImagesProjectDetailResponse{
-            }
-        }
-    }*/
 
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",

@@ -16,12 +16,10 @@ func main() {
     }
     
     baseRepository := repository.NewBaseRepository(dbConnection)
-
-    //userRepository := repository.NewBaseRepository(dbConnection)
+	
     userUsecase := usecase.NewUserUsecase(baseRepository)
     userHandler := handler.NewUserHandler(userUsecase)
-
-    //projectRepository := repository.NewBaseRepository(dbConnection)
+	
     projectUsecase := usecase.NewProjectUsecase(baseRepository)
     projectHandler := handler.NewProjectHandler(projectUsecase, userUsecase)
 
