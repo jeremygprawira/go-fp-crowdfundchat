@@ -189,3 +189,23 @@ func (h *UserHandler) UploadImage(c *gin.Context) {
 		"isImageUploaded": true,
 	})
 }
+
+func (h *UserHandler) VerifyUser(c *gin.Context) {
+	userID := c.GetInt("currentUser")
+	user, err := h.userUsecase.GetUserByID(userID)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42211",
+			"responseMessage": "The required field on the body request is empty or invalid.",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "User has been logged in successfully",
+		"name": user.Name,
+		"phone_no": user.PhoneNo,
+		"image_url": user.AvatarFileName,
+	})
+}

@@ -4,6 +4,7 @@ import (
 	handler "go-fp-crowdfundchat/delivery/http"
 	"go-fp-crowdfundchat/delivery/middleware"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,6 +12,7 @@ var r *gin.Engine
 
 func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler, t *handler.TransactionHandler) {
 	r = gin.Default()
+	r.Use(cors.Default())
 	r.Static("/images", "./mock/images")
 	api := r.Group("v1/api")
 
@@ -23,7 +25,7 @@ func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler, t *handler.Tr
 
 	apiAuth.POST("/user/verify-phone", u.IsPhoneNoAvailable)
 	apiAuth.POST("/user/upload-image", u.UploadImage)
-	//apiAuth.GET("/user/verify-user", u.VerifyUser)
+	apiAuth.GET("/user/verify-user", u.VerifyUser)
 
 	apiAuth.GET("/project/project-list", p.ProjectList)
 	apiAuth.GET("/project/project-detail/:id", p.ProjectDetail)
