@@ -146,3 +146,30 @@ func (h *TransactionHandler) OrderTransaction(c *gin.Context) {
         "transaction_url": transaction.TransactionURL,
     })
 }
+
+func (h *TransactionHandler) VerifyTransaction(c *gin.Context) {
+	var request model.TransactionNotificationRequest
+
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{
+            "responseCode": "40023",
+            "responseMessage": fmt.Sprintf("Failed to process the transaction: %s", err.Error()),
+        })
+        return
+    }
+
+	err = h.transactionUsecase.PostVerifyTransaction(&request)
+	if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{
+            "responseCode": "40024",
+            "responseMessage": fmt.Sprintf("Failed to process the transaction: %s", err.Error()),
+        })
+        return
+    }
+
+	c.JSON(http.StatusOK, gin.H{
+        "responseCode": "20000",
+        "responseMessage": "Request has been successfully sent.",
+    })
+}

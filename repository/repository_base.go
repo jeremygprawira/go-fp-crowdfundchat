@@ -23,6 +23,7 @@ type BaseRepository interface {
 
     FindTransactionByProjectID(projectID int) ([]*model.Transaction, error)
     FindTransactionByUserID(userID int) ([]*model.Transaction, error)
+	FindTransactionByID(ID int) (*model.Transaction, error)
     CreateTransactionToDB(transaction *model.Transaction) (*model.Transaction, error)
     UpdateTransactionToDB(transaction *model.Transaction) (*model.Transaction, error)
 }
@@ -159,6 +160,16 @@ func (r *baseRepository) FindTransactionByUserID(userID int) ([]*model.Transacti
     }
     
     return transaction, nil
+}
+
+func (r *baseRepository) FindTransactionByID(ID int) (*model.Transaction, error) {
+	var transaction *model.Transaction
+	err := r.db.Where("id = ?", ID).Find(&transaction).Error
+	if err != nil {
+		return transaction, err
+	}
+
+	return transaction, nil
 }
 
 func (r *baseRepository) CreateTransactionToDB(transaction *model.Transaction) (*model.Transaction, error) {

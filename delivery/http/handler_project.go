@@ -84,10 +84,60 @@ func (h *ProjectHandler) ProjectDetail(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	/*c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
 		"responseMessage": "Project detail has been successfully retrieved.",
 		"data": &project,
+	})*/
+
+	var projectImagesList *model.ProjectImagesProjectDetailResponse
+    for _, p := range project.ProjectImages {
+        if len(project.ProjectImages) > 0 {
+			projectImagesList = &model.ProjectImagesProjectDetailResponse{
+				ImageURL: p.FileName,
+				IsPrimary: p.IsPrimary,
+			}
+		} else if len(project.ProjectImages) == 0 {
+			projectImagesList = &model.ProjectImagesProjectDetailResponse{}
+		}
+		
+		/*if len(p.Project.ProjectImages) > 0 {
+            projectImagesList = &model.ProjectImagesTransactionListResponse{
+                Name: p.Project.ProjectTitle,
+                ImageURL: p.Project.ProjectImages[0].FileName,
+            }
+        } else if len(p.Project.ProjectImages) == 0 {
+            projectImagesList = &model.ProjectImagesTransactionListResponse{
+                Name: p.Project.ProjectTitle,
+                ImageURL: "",
+            }
+        }*/
+    }
+    /*for _, p := range project {
+        if len(p) > 0 {
+            projectImagesList = &model.ProjectImagesProjectDetailResponse{
+                Name: p,
+                ImageURL: p.FileName,
+            }
+        } else if len(p.Project.ProjectImages) == 0 {
+            projectImagesList = &model.ProjectImagesProjectDetailResponse{
+            }
+        }
+    }*/
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "Project detail has been successfully retrieved.",
+		"project_id": &project.ID,
+		"project_title": &project.ProjectTitle,
+		"short_description": &project.ShortDescription,
+		"long_description": &project.LongDescription,
+		"current_amount": &project.CurrentAmount,
+		"goal_amount": &project.GoalAmount,
+		"contributor_count": &project.ContributorCount,
+		"user_id": &project.UserID,
+		"slug": &project.Slug,
+		"image_url": projectImagesList,
 	})
 }
 

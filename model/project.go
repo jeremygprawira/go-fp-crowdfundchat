@@ -65,6 +65,11 @@ type ProjectDetailResponse struct {
 	ProjectImages			[]ProjectImages	`json:"project_images" gorm:"foreignKey:ProjectID"`
 }
 
+type ProjectImagesProjectDetailResponse struct {
+    IsPrimary               int         	`json:"is_primary"`
+    ImageURL                string          `json:"image_url"`
+}
+
 type CreateProjectRequest struct {
 	ProjectTitle 			string 			`json:"project_title" binding:"required"`
 	ShortDescription 		string			`json:"short_description" binding:"required"`
