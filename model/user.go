@@ -11,6 +11,7 @@ type User struct {
 	PIN 				string			`json:"pin"`
 	AvatarFileName 		string			`json:"avatar_file_name"`
 	Role 				string			`json:"role"`
+	Status				string			`json:"status"`
 	CreatedAt 			time.Time		`json:"created_at"`
 	UpdatedAt 			time.Time		`json:"updated_at"`
 }

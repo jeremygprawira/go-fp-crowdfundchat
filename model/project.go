@@ -19,6 +19,7 @@ type Project struct {
 	UpdatedAt 				time.Time		`json:"updated_at"`
 	User					User			`json:"user" gorm:"foreignKey:ID"`
 
+	Users					[]User			`json:"users" gorm:"foreignKey:ID"`
 	ProjectImages			[]ProjectImages	`json:"project_images"`
 }
 
@@ -68,6 +69,11 @@ type ProjectDetailResponse struct {
 type ProjectImagesProjectDetailResponse struct {
     IsPrimary               int         	`json:"is_primary"`
     ImageURL                string          `json:"image_url"`
+}
+
+type UserAvatarProjectDetailResponse struct {
+	UserID					int				`json:"user_id"`
+	AvatarFileName			string			`json:"avatar_file_name"`
 }
 
 type CreateProjectRequest struct {

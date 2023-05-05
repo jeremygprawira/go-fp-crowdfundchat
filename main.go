@@ -3,6 +3,7 @@ package main
 import (
 	"go-fp-crowdfundchat/database"
 	handler "go-fp-crowdfundchat/delivery/http"
+	"go-fp-crowdfundchat/delivery/websockets"
 	"go-fp-crowdfundchat/repository"
 	"go-fp-crowdfundchat/router"
 	"go-fp-crowdfundchat/usecase"
@@ -26,7 +27,13 @@ func main() {
     transactionUsecase := usecase.NewTransactionUsecase(baseRepository)
     transactionHandler := handler.NewTransactionHandler(transactionUsecase, userUsecase)
 
-    router.InitRouter(userHandler, projectHandler, transactionHandler)
-    router.Start()
+    chatUsecase := usecase.NewChatUsecase(baseRepository)
+    chatHandler := handler.NewChatHandler(chatUsecase)
 
+
+    hub := websockets.NewHub()
+    websocketHandler := websockets.NewWebsocketHandler(hub, userUsecase)
+
+    router.InitRouter(userHandler, projectHandler, transactionHandler, chatHandler, websocketHandler)
+    router.Start()
 }

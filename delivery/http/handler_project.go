@@ -102,6 +102,20 @@ func (h *ProjectHandler) ProjectDetail(c *gin.Context) {
 		}
     }
 
+	var userList *model.UserAvatarProjectDetailResponse
+    for _, u := range project.Users {
+        if len(project.User.AvatarFileName) > 0 {
+			userList = &model.UserAvatarProjectDetailResponse{
+				UserID: project.User.ID,
+				AvatarFileName: project.User.AvatarFileName,
+			}
+		} else if len(project.User.AvatarFileName) == 0 {
+			userList = &model.UserAvatarProjectDetailResponse{
+				UserID: u.ID,
+			}
+		}
+    }
+
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
 		"responseMessage": "Project detail has been successfully retrieved.",
@@ -113,6 +127,7 @@ func (h *ProjectHandler) ProjectDetail(c *gin.Context) {
 		"goal_amount": &project.GoalAmount,
 		"contributor_count": &project.ContributorCount,
 		"user_id": &project.UserID,
+		"user": userList,
 		"slug": &project.Slug,
 		"image_url": projectImagesList,
 	})

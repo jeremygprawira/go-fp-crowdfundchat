@@ -26,6 +26,11 @@ type BaseRepository interface {
 	FindTransactionByID(ID int) (*model.Transaction, error)
     CreateTransactionToDB(transaction *model.Transaction) (*model.Transaction, error)
     UpdateTransactionToDB(transaction *model.Transaction) (*model.Transaction, error)
+
+    CreateChatToDB(chat *model.Chat) (*model.Chat, error)
+    FindChatByIDs(originID int, destinationID int) ([]*model.Chat, error)
+    FindUsersByChat(originID int) ([]*model.Chat, error)
+    FindStatus(status string) (*model.User, error)
 }
 
 type baseRepository struct {
@@ -188,4 +193,43 @@ func (r *baseRepository) UpdateTransactionToDB(transaction *model.Transaction) (
     }
 
     return transaction, nil
+}
+
+func (r *baseRepository) CreateChatToDB(chat *model.Chat) (*model.Chat, error) {
+    err := r.db.Create(&chat).Error
+    if err != nil {
+        return chat, err
+    }
+
+    return chat, nil
+}
+
+func (r *baseRepository) FindChatByIDs(originID int, destinationID int) ([]*model.Chat, error) {
+    var chat []*model.Chat
+    err := r.db.Where("origin_user_id = ? AND destination_user_id = ?", originID, destinationID).Or("origin_user_id = ? AND destination_user_id = ?", destinationID, originID).Find(&chat).Error
+    if err != nil {
+        return chat, err
+    }
+
+    return chat, nil
+}
+
+func (r *baseRepository) FindUsersByChat(originID int) ([]*model.Chat, error) {
+    var chat []*model.Chat
+    err := r.db.Where("origin_user_id = ?", originID).Find(&chat).Error
+    if err != nil {
+        return chat, err
+    }
+
+    return chat, nil
+}
+
+func (r *baseRepository) FindStatus(status string) (*model.User, error) {
+    var user *model.User
+    err := r.db.Where("phone_no = ?", status).Find(&user).Error
+    if err != nil {
+        return user, err
+    }
+
+    return user, nil 
 }

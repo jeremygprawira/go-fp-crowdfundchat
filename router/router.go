@@ -3,6 +3,7 @@ package router
 import (
 	handler "go-fp-crowdfundchat/delivery/http"
 	"go-fp-crowdfundchat/delivery/middleware"
+	"go-fp-crowdfundchat/delivery/websockets"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,8 @@ import (
 
 var r *gin.Engine
 
-func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler, t *handler.TransactionHandler) {
+func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler, t *handler.TransactionHandler, c *handler.ChatHandler, w *websockets.WebsocketHandler) {
+	//go handler.Broadcaster()
 	r = gin.Default()
 	r.Use(cors.Default())
 	r.Static("/images", "./mock/images")
@@ -37,8 +39,26 @@ func InitRouter(u *handler.UserHandler, p *handler.ProjectHandler, t *handler.Tr
 	apiAuth.GET("/user/transaction", t.UserTransactionList)
 	apiAuth.POST("/transaction/order", t.OrderTransaction)
 	api.POST("/transaction/verify", t.VerifyTransaction)
+
+	api.POST("/chat/send", c.InputChat)
+	api.GET("/chat/history/:origin_id/:destination_id", c.ChatHistory)
+	api.GET("/chat/:user_id", handler.InitiateChat)
+	//api.GET("/ws", handler.HandleConnection)
+
+	//api.POST("/ws/create-room", w.CreateRoom)
 }
 
 func Start() error {
 	return r.Run(":8080")
 }
+/*
+func RunWebsocket(c *handler.ChatHandler) error {
+	go handler.Broadcaster()
+	
+	r = gin.Default()
+	r.Use(cors.Default())
+	api := r.Group("v1/api")
+	api.GET("/ws", handler.HandleConnection)
+
+	return r.Run(":8081")
+}*/

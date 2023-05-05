@@ -14,6 +14,8 @@ type UserUsecase interface {
 	PostPinValidation(request *model.PinValidationRequest) (bool, error)
 	PostUploadImage(userID int, fileLocation string) (*model.User, error)
  	GetUserByID(userID int) (*model.User, error)
+	GetOnlineUserByStatus(status string) (*model.User, error)
+	PostUpdateUserStatus(userID int, status string) (*model.User, error)
 }
 
 type userUsecase struct {
@@ -34,6 +36,7 @@ func (u *userUsecase) PostRegisterUser(request *model.RegisterUserRequest) (*mod
 	}
 	user.PIN = string(encrpytedPassword)
 	user.Role = "user"
+	user.Status = "offline"
 
 	newUser, err := u.repo.CreateDataToDB(&user)
 	if err != nil {
@@ -62,7 +65,13 @@ func (u *userUsecase) PostLoginUser(request *model.LoginUserRequest) (*model.Use
 		return user, errors.New("pin is incorrect")
 	}
 
-	return user, nil
+	user.Status = "online"
+	updatedStatus, err := u.repo.UpdateDataToDB(user)
+	if err != nil {
+		return user, err
+	}
+
+	return updatedStatus, nil
 }
 
 func (u *userUsecase) PostPhoneNoAvailability(request *model.PhoneNoBodyRequest) (bool, error) {
@@ -115,4 +124,28 @@ func (u *userUsecase) GetUserByID(userID int) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func(u *userUsecase) GetOnlineUserByStatus(status string) (*model.User, error) {
+	user, err := u.repo.FindStatus(status)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (u *userUsecase) PostUpdateUserStatus(userID int, status string) (*model.User, error) {
+	user, err := u.repo.FindUserByID(userID)
+	if err != nil {
+		return user, errors.New("cannot find the user ID")
+	}
+
+	user.Status = status
+	updatedStatus, err := u.repo.UpdateDataToDB(user)
+	if err != nil {
+		return updatedStatus, err
+	}
+
+	return updatedStatus, nil
 }

@@ -52,6 +52,7 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 		"name": user.Name,
 		"phone_no": user.PhoneNo,
 		"pin": user.PIN,
+		"status": user.Status,
 		"token": authToken,
 	})
 }
@@ -91,6 +92,7 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 		"responseMessage": "User has been logged in successfully",
 		"name": successLoginUser.Name,
 		"phone_no": successLoginUser.PhoneNo,
+		"status": successLoginUser.Status,
 		"token": authToken,
 	})
 }
