@@ -1,13 +1,10 @@
 package util
 
 import (
-	"crypto/rand"
-	"crypto/sha512"
-	"encoding/hex"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
+/*
 // Define salt size
 const SaltSize = 16
 
@@ -58,9 +55,9 @@ func DoPasswordsMatch(hashedPassword, currPassword string,
 
 	return hashedPassword == CurrPasswordHash
 }
-
+*/
 func HashSaltPassword (pass string) (string, error) {
-	generateHashSalt, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	generateHashSalt, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.MinCost)
 	if err != nil {
 		return string(generateHashSalt), err
 	}
@@ -68,7 +65,7 @@ func HashSaltPassword (pass string) (string, error) {
 	return string(generateHashSalt), nil
 }
 
-func CheckPasswordCredibility (notHashedPass string, HashedPass string) error {
+func CheckPINCredibility (notHashedPass string, HashedPass string) error {
 	return bcrypt.CompareHashAndPassword([]byte(HashedPass), []byte(notHashedPass))	
 } 
 

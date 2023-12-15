@@ -2,30 +2,36 @@ package main
 
 import (
 	"go-fp-crowdfundchat/database"
-	"go-fp-crowdfundchat/handler"
+	handler "go-fp-crowdfundchat/delivery/http"
+	"go-fp-crowdfundchat/repository"
 	"go-fp-crowdfundchat/router"
-	"go-fp-crowdfundchat/usecase/user"
+	"go-fp-crowdfundchat/usecase"
 	"log"
 )
 
 func main() {
-	dbConnection, err := database.ConnectDB()
-	if err != nil {
-		log.Fatalf("could not initialize database connection: %s", err)
-	}
+    dbConnection, err := database.ConnectDB()
+    if err != nil {
+        log.Fatalf("could not initialize database connection: %s", err)
+    }
+    
+    baseRepository := repository.NewBaseRepository(dbConnection)
+	
+    userUsecase := usecase.NewUserUsecase(baseRepository)
+    userHandler := handler.NewUserHandler(userUsecase)
+	
+    projectUsecase := usecase.NewProjectUsecase(baseRepository)
+    projectHandler := handler.NewProjectHandler(projectUsecase, userUsecase)
 
-	userRepository := user.NewRepository(dbConnection)
-	userService := user.NewService(userRepository)
+    transactionUsecase := usecase.NewTransactionUsecase(baseRepository)
+    transactionHandler := handler.NewTransactionHandler(transactionUsecase, userUsecase)
 
-	/*userInput := user.RegisterUserRequest{}
-	userInput.Name = "TEST-NEW-4"
-	userInput.PIN = "TEST-NEW-4"
-	userInput.PhoneNo = "TEST-NEW-4"
-
-	userService.PostRegisterUser(userInput)*/
-
-	userHandler := handler.NewUserHandler(userService)
-	router.InitRouter(userHandler)
-	router.Start()
+    chatUsecase := usecase.NewChatUsecase(baseRepository)
+    chatHub := handler.NewHub(chatUsecase)
+    chatHandler := handler.NewChatHandler(chatHub, userUsecase, projectUsecase, chatUsecase)
+    go chatHub.Run()
+    
+    router.InitRouter(userHandler, projectHandler, transactionHandler, chatHandler)
+    router.Start()
 
 }
