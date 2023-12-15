@@ -90,6 +90,15 @@ func (h *ProjectHandler) ProjectDetail(c *gin.Context) {
 		"data": &project,
 	})*/
 
+	user, err := h.userUsecase.GetUserByID(project.UserID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40015",
+			"responseMessage": "Failed to get user profile",
+		})
+		return
+	}
+
 	var projectImagesList *model.ProjectImagesProjectDetailResponse
     for _, p := range project.ProjectImages {
         if len(project.ProjectImages) > 0 {
@@ -102,17 +111,27 @@ func (h *ProjectHandler) ProjectDetail(c *gin.Context) {
 		}
     }
 
+	projectImageMain := ""
+	if len(project.ProjectImages) > 0 {
+		//projectImageMain = "mock/images/" + project.ProjectImages[0].FileName
+		projectImageMain = project.ProjectImages[0].FileName
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"responseCode": "20000",
 		"responseMessage": "Project detail has been successfully retrieved.",
 		"project_id": &project.ID,
 		"project_title": &project.ProjectTitle,
+		"project_image": projectImageMain,
+		"perks": &project.Perks,
 		"short_description": &project.ShortDescription,
 		"long_description": &project.LongDescription,
 		"current_amount": &project.CurrentAmount,
 		"goal_amount": &project.GoalAmount,
 		"contributor_count": &project.ContributorCount,
 		"user_id": &project.UserID,
+		"user_name": user.Name,
+		"user_avatar": user.AvatarFileName,
 		"slug": &project.Slug,
 		"image_url": projectImagesList,
 	})
@@ -182,7 +201,7 @@ func (h *ProjectHandler) UpdateProject(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"responseCode": "42207",
-			"responseMessage": "Failed to update project",
+			"responseMessage": err.Error(),
 		})
 		return
 	}
@@ -245,7 +264,6 @@ func (h *ProjectHandler) UploadProjectImage (c *gin.Context) {
 	}
 
 	userID := c.GetInt("currentUser")
-
 	path := fmt.Sprintf("mock/images/%d-%s", userID, file.Filename)
 	err = c.SaveUploadedFile(file, path)
 	if err != nil {
@@ -256,11 +274,12 @@ func (h *ProjectHandler) UploadProjectImage (c *gin.Context) {
 		return
 	}
 	
+	request.User.ID = userID
 	_, err = h.projectUsecase.PostUploadProjectImage(&request, path)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"responseCode": "40018",
-			"responseMessage": "Failed to upload image to your project",
+			"responseMessage": err.Error(),
 			"is_uploaded": false,
 		})
 		return

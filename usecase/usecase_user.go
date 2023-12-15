@@ -14,6 +14,7 @@ type UserUsecase interface {
 	PostPinValidation(request *model.PinValidationRequest) (bool, error)
 	PostUploadImage(userID int, fileLocation string) (*model.User, error)
  	GetUserByID(userID int) (*model.User, error)
+	PutUpdateUser(request *model.RegisterUserRequest) (*model.User, error)
 }
 
 type userUsecase struct {
@@ -28,6 +29,10 @@ func (u *userUsecase) PostRegisterUser(request *model.RegisterUserRequest) (*mod
 	user := model.User{}
 	user.Name = request.Name
 	user.PhoneNo = request.PhoneNo
+	if request.PIN != request.ConfirmPIN {
+		return &user, errors.New("pin is different")
+	}
+
 	encrpytedPassword, err := util.HashSaltPassword(request.PIN)
 	if err != nil {
 		return nil, err
@@ -115,4 +120,33 @@ func (u *userUsecase) GetUserByID(userID int) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func (u *userUsecase) PutUpdateUser(request *model.RegisterUserRequest) (*model.User, error) {
+	phoneNo := request.PhoneNo
+
+	user, err := u.repo.FindDataByPhoneNo(phoneNo)
+	if err != nil {
+		return user, err
+	}
+
+	user.Name = request.Name
+	user.PhoneNo = request.PhoneNo
+
+	if request.PIN != request.ConfirmPIN {
+		return user, errors.New("pin is different")
+	}
+
+	encrpytedPassword, err := util.HashSaltPassword(request.PIN)
+	if err != nil {
+		return nil, err
+	}
+	user.PIN = string(encrpytedPassword)
+
+	updatedUser, err := u.repo.UpdateDataToDB(user)
+	if err != nil {
+		return updatedUser, errors.New("failed to update user data")
+	}
+
+	return updatedUser, nil
 }

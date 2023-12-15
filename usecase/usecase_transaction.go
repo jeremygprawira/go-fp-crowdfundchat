@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"errors"
 	"go-fp-crowdfundchat/model"
 	"go-fp-crowdfundchat/repository"
 	"go-fp-crowdfundchat/util"
@@ -24,14 +23,17 @@ func NewTransactionUsecase(repo repository.BaseRepository) *transactionUsecase {
 }
 
 func (u *transactionUsecase) GetTransactionByProjectID(request *model.ProjectTransactionListRequest) ([]*model.Transaction, error) {
-    project, err := u.repo.FindProjectByProjectID(request.ID)
+    /*project, err := u.repo.FindProjectByProjectID(request.ID)
     if err != nil {
         return []*model.Transaction{}, err
-    }
+    }*/
 
+    /*fmt.Println(request.User.ID)
+    fmt.Println("user project ")
+    fmt.Println(project.UserID)
     if project.UserID != request.User.ID {
-        return []*model.Transaction{}, errors.New("not the owner of the project")
-    }
+        return []*model.Transaction{}, errors.New("not the owner of the project" )
+    }*/
     
     transaction, err := u.repo.FindTransactionByProjectID(request.ID)
     if err != nil {

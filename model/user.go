@@ -19,6 +19,7 @@ type RegisterUserRequest struct {
 	Name		string		`json:"name" binding:"required"`
 	PhoneNo 	string		`json:"phoneNo" binding:"required"`
 	PIN			string		`json:"pin" binding:"required"`
+	ConfirmPIN	string		`json:"confirm_pin" binding:"required"`
 }
 
 type LoginUserRequest struct {

@@ -28,6 +28,14 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 		return
 	}
 
+	if userRequest.PIN != userRequest.ConfirmPIN {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40001",
+			"responseMessage": "Pin is different",
+		})
+		return
+	}
+
 	user, err := h.userUsecase.PostRegisterUser(&userRequest)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -207,5 +215,54 @@ func (h *UserHandler) VerifyUser(c *gin.Context) {
 		"name": user.Name,
 		"phone_no": user.PhoneNo,
 		"image_url": user.AvatarFileName,
+		"user_id": user.ID,
+	})
+}
+
+func (h *UserHandler) UpdateUser(c *gin.Context) {
+	var request model.RegisterUserRequest
+
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"responseCode": "42201",
+			"responseMessage": "The required field on the body request is empty or invalid.",
+		})
+		return
+	}
+	
+	if request.PIN != request.ConfirmPIN {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40001",
+			"responseMessage": "Pin is different",
+		})
+		return
+	}
+
+	user, err := h.userUsecase.PutUpdateUser(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"responseCode": "40006",
+			"responseMessage": err.Error(),
+		})
+		return
+	}
+
+	authToken, err := usecase.NewAuthUsecase().GenerateToken(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"responseCode": "50002",
+			"responseMessage": "Internal Server Error",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"responseCode": "20000",
+		"responseMessage": "User has been registered successfully",
+		"name": user.Name,
+		"phone_no": user.PhoneNo,
+		"pin": user.PIN,
+		"token": authToken,
 	})
 }

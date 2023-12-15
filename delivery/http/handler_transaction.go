@@ -30,11 +30,13 @@ func (h *TransactionHandler) ProjectTransactionList(c *gin.Context) {
         return
     }
 
+    request.User.ID = c.GetInt("currentUser")
+
     transaction, err := h.transactionUsecase.GetTransactionByProjectID(request)
     if err != nil {
         c.JSON(http.StatusBadRequest, gin.H{
             "responseCode": "40020",
-            "responseMessage": "Failed to retrieve the project's transaction",
+            "responseMessage": err.Error(),
         })
         return
     }
@@ -52,7 +54,7 @@ func (h *TransactionHandler) ProjectTransactionList(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{
         "responseCode": "20000",
         "responseMessage": "Request has been successfully sent.",
-        "transactions": transactionList,
+        "data": transactionList,
     })
 }
 
@@ -97,7 +99,7 @@ func (h *TransactionHandler) UserTransactionList(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{
         "responseCode": "20000",
         "responseMessage": "Request has been successfully sent.",
-        "transactions": userTransactionList,
+        "data": userTransactionList,
     })
 }
 

@@ -26,7 +26,12 @@ func main() {
     transactionUsecase := usecase.NewTransactionUsecase(baseRepository)
     transactionHandler := handler.NewTransactionHandler(transactionUsecase, userUsecase)
 
-    router.InitRouter(userHandler, projectHandler, transactionHandler)
+    chatUsecase := usecase.NewChatUsecase(baseRepository)
+    chatHub := handler.NewHub(chatUsecase)
+    chatHandler := handler.NewChatHandler(chatHub, userUsecase, projectUsecase, chatUsecase)
+    go chatHub.Run()
+    
+    router.InitRouter(userHandler, projectHandler, transactionHandler, chatHandler)
     router.Start()
 
 }

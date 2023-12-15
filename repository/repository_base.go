@@ -26,6 +26,9 @@ type BaseRepository interface {
 	FindTransactionByID(ID int) (*model.Transaction, error)
     CreateTransactionToDB(transaction *model.Transaction) (*model.Transaction, error)
     UpdateTransactionToDB(transaction *model.Transaction) (*model.Transaction, error)
+
+    CreateChatToDB(chat *model.Chat) (*model.Chat, error)
+    FindChatByProjectID(projectID int) ([]*model.Chat, error)
 }
 
 type baseRepository struct {
@@ -188,4 +191,23 @@ func (r *baseRepository) UpdateTransactionToDB(transaction *model.Transaction) (
     }
 
     return transaction, nil
+}
+
+func (r *baseRepository) CreateChatToDB(chat *model.Chat) (*model.Chat, error) {
+    err := r.db.Create(&chat).Error
+    if err != nil {
+        return chat, err
+    }
+
+    return chat, nil
+}
+
+func (r *baseRepository) FindChatByProjectID(projectID int) ([]*model.Chat, error) {
+    var chat []*model.Chat
+    err := r.db.Where("project_id = ?", projectID).Order("created_at asc").Find(&chat).Error
+    if err != nil {
+        return chat, err
+    }
+
+    return chat, nil
 }

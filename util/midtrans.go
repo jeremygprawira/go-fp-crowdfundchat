@@ -9,7 +9,7 @@ import (
 )
 
 func GetTransactionURL(transaction *model.Transaction, user *model.User) (string, error) {
-    midtrans.ServerKey = ""
+    midtrans.ServerKey = "SB-Mid-server-TJcg2sGMzLetZbvhcHpUzFjf"
     midtrans.Environment = midtrans.Sandbox
     var s snap.Client
 
